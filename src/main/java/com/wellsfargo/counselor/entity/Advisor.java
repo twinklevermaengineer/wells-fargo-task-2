@@ -1,32 +1,48 @@
 package com.wellsfargo.counselor.entity;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "advisor")
 public class Advisor {
 
     @Id
-    @GeneratedValue()
-    private long advisorId;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "advisor_id")
+    private Long advisorId;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(nullable = false)
+    @Email
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+    
+    @OneToMany(mappedBy = "advisor")
+    private List<Client> clients = new ArrayList<>();
 
     protected Advisor() {
 
@@ -38,6 +54,14 @@ public class Advisor {
         this.address = address;
         this.phone = phone;
         this.email = email;
+    }
+
+    public List<Client> getClients() {
+        return clients;
+    }
+
+    public void setClients(List<Client> clients) {
+        this.clients = clients;
     }
 
     public Long getAdvisorId() {
