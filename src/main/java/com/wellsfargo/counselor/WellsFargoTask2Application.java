@@ -4,11 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class Entrypoint {
+@SpringBootApplication()
+public class WellsFargoTask2Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(Entrypoint.class, args);
+        SpringApplication.run(WellsFargoTask2Application.class, args);
  
     
     }

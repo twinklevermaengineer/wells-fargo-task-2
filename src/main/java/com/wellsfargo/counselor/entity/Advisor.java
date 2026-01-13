@@ -44,7 +44,7 @@ public class Advisor {
     @OneToMany(mappedBy = "advisor")
     private List<Client> clients = new ArrayList<>();
 
-    protected Advisor() {
+    public Advisor() {
 
     }
 
