@@ -1,0 +1,1 @@
+CREATE DATABASE wells_fargo;

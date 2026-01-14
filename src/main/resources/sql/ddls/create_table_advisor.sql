@@ -1,0 +1,10 @@
+USE wells_fargo;
+
+CREATE TABLE advisor (
+advisor_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+first_name VARCHAR(100) NOT NULL,
+last_name VARCHAR(100) NOT NULL,
+address VARCHAR(250) NOT NULL,
+phone VARCHAR(25) NOT NULL,
+email VARCHAR(100) NOT NULL UNIQUE
+);

@@ -41,7 +41,7 @@ public class AdvisorRequestValidatorTest {
 		validRequest = new AdvisorRequest();
 		validRequest.setFirstName("Johnson");
 		validRequest.setLastName("Doe");
-		validRequest.setAddress("1234, texas");
+		validRequest.setAddress("1234, newyork");
 		validRequest.setEmailAddress("doejohnson@gmail.com");
 		validRequest.setPhoneNumber("1234567890");
 	}
@@ -107,7 +107,7 @@ public class AdvisorRequestValidatorTest {
 		existingAdvisor.setLastName("Xyz");
 		existingAdvisor.setEmail("abc@gmail.com");
 		existingAdvisor.setPhone("1234987659");
-		existingAdvisor.setAddress("1564, texas");
+		existingAdvisor.setAddress("1564, newyork");
 		
 		List<Advisor> advisorList = new ArrayList<>();
 		advisorList.add(existingAdvisor);
@@ -160,7 +160,7 @@ public class AdvisorRequestValidatorTest {
 	@Test
 	void validateForUpdate_addressAlreadyExists() {
 		Advisor existingAdvisor = new Advisor();
-		existingAdvisor.setAddress("456, plano");
+		existingAdvisor.setAddress("456, NewYork");
 		
 		List<Advisor> existingAdvisorList = new ArrayList<>();
 		existingAdvisorList.add(existingAdvisor);
@@ -185,11 +185,11 @@ public class AdvisorRequestValidatorTest {
 	void basicValidationTest_fail_errors_notEmpty() {
 		List<String> errors = new ArrayList<>();
 		AdvisorRequest inValidRequest = new AdvisorRequest();
-		inValidRequest.setFirstName(" ");
+		inValidRequest.setFirstName("     ");
 		inValidRequest.setLastName("Doe");
 		inValidRequest.setEmailAddress(null);
 		inValidRequest.setPhoneNumber("1234567899");
-		inValidRequest.setAddress("1355,Plano");
+		inValidRequest.setAddress("1355,NewYork");
 		validator.basicValidation(inValidRequest, errors);
 		assertFalse(errors.isEmpty());
 		
@@ -349,8 +349,8 @@ public class AdvisorRequestValidatorTest {
 	@Test
 	void addressValidationTest_success() {
 		
-		String address = "1234, Plano";
-		List<String> errors = new ArrayList();
+		String address = "1234, newyork";
+		List<String> errors = new ArrayList<>();
 		
 		validator.isAddressValid(address, errors);
 		assertTrue(errors.isEmpty());

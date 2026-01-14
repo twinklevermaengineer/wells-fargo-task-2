@@ -25,6 +25,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class AdvisorServiceImpl implements AdvisorService {
 	private static final Logger logger = LoggerFactory.getLogger(AdvisorServiceImpl.class);
+	
 	private AdvisorRepository advisorRepository;
 	private AdvisorRequestValidator validator;
 	
@@ -36,8 +37,7 @@ public class AdvisorServiceImpl implements AdvisorService {
 	
 	@Override
 	public Optional<Advisor> findById(Long id) {
-		logger.error("Advisor found with id " + id);
-		
+		logger.info("Find Advisor using id " + id);
 		return advisorRepository.findById(id);
 	}
 
@@ -122,7 +122,6 @@ public class AdvisorServiceImpl implements AdvisorService {
 	public void deleteById(Long id) {
 		advisorRepository.deleteById(id);	
 	}
-
 
 }
 
