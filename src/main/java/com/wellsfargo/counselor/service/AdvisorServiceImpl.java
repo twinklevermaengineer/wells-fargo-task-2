@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
 import com.wellsfargo.counselor.repository.AdvisorRepository;
 import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
-
-import com.wellsfargo.counselor.rest.AdvisorCreationException;
+import com.wellsfargo.counselor.model.request.AdvisorResponse;
+import com.wellsfargo.counselor.rest.ResourceCreationException;
 import com.wellsfargo.counselor.rest.InvalidRequestException;
-import com.wellsfargo.counselor.rest.UserNotFoundException;
+import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.AdvisorRequestValidator;
 
 import jakarta.transaction.Transactional;
@@ -36,9 +35,21 @@ public class AdvisorServiceImpl implements AdvisorService {
 	}
 	
 	@Override
-	public Optional<Advisor> findById(Long id) {
+	public AdvisorResponse findById(Long id) {
 		logger.info("Find Advisor using id " + id);
-		return advisorRepository.findById(id);
+		
+		Optional<Advisor> advisorFromDB = advisorRepository.findById(id);
+		if(advisorFromDB.isPresent()) {
+			Advisor advisor = advisorFromDB.get();
+			AdvisorResponse advisorResponse = new AdvisorResponse(
+					id, advisor.getFirstName(),
+					advisor.getLastName(),
+					advisor.getAddress(),
+					advisor.getPhone(),
+					advisor.getEmail());
+			return advisorResponse;
+		}
+		return null;
 	}
 
 	@Override
@@ -55,18 +66,20 @@ public class AdvisorServiceImpl implements AdvisorService {
 		}
 	
 		// Map Request object to Entity Object
-		Advisor advisorEntity = new Advisor(advisorRequest.getFirstName()
+		Advisor advisorEntity = new Advisor(null, advisorRequest.getFirstName()
 				,advisorRequest.getLastName(),advisorRequest.getAddress()
-				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress());
-		
+				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);
+
 		try {
 		  Advisor saveAdvisor = advisorRepository.save(advisorEntity);
 		  if (ObjectUtils.isEmpty(saveAdvisor)) {
 			  logger.error("Unexpected error occured while saving Advisor entity");
 			  throw new Exception("Unexpected error occured while saving Advisor entity");
 		  }
-		  logger.info("Save Advisor with id");
-		  return saveAdvisor.getAdvisorId();
+		  
+		  Long advisorId = saveAdvisor.getAdvisorId();
+		  logger.info("Advisor created, id: {}", advisorId);
+		  return advisorId;
 		}
 		catch (DataIntegrityViolationException excp) {
 			Throwable rootCause = excp.getRootCause();
@@ -78,11 +91,11 @@ public class AdvisorServiceImpl implements AdvisorService {
 		            + " already exists. Please use a different email address.";
 		        }
 	    }		    
-			throw new AdvisorCreationException("Error occured while saving advisor object, "
+			throw new ResourceCreationException("Error occured while saving advisor object, "
 			+ error);
 		}
 		catch (Exception excp) {
-			throw new AdvisorCreationException("Error occured while saving advisor object, "
+			throw new ResourceCreationException("Error occured while saving advisor object, "
 			+ excp.getMessage());
 		}
 	}
@@ -101,7 +114,7 @@ public class AdvisorServiceImpl implements AdvisorService {
 		
 		Advisor advisor = advisorRepository.findById(id)
 	            .orElseThrow(() ->
-	                    new UserNotFoundException("Advisor not found with id " + id));
+	                    new ResourceNotFoundException("Advisor not found with id " + id));
 	
 		
 		advisor.setFirstName(advisorRequest.getFirstName());
@@ -112,19 +125,43 @@ public class AdvisorServiceImpl implements AdvisorService {
 		
 		advisorRepository.save(advisor);
 	}
+	
 	@Override
-	public List<Advisor> findAll() {  
-		return advisorRepository.findAll();
+	public List<AdvisorResponse> findAll() {  
+		
+		List<Advisor> advisorsFromDB = advisorRepository.findAll();
+		
+		List<AdvisorResponse> advisors = new ArrayList<>();
+		for(Advisor advisor: advisorsFromDB) {
+			advisors.add(new AdvisorResponse(
+					advisor.getAdvisorId(),advisor.getFirstName(),
+					advisor.getLastName(), advisor.getAddress(),
+					advisor.getPhone(),advisor.getEmail()));
+		}		
+		return advisors;
 	}
 
 	@Override
 	@Transactional
 	public void deleteById(Long id) {
 		advisorRepository.deleteById(id);	
+	}	
+	
+	@Override
+	public AdvisorResponse findByAddress(String address) {
+		Optional<Advisor> advisorFromDb = advisorRepository.findByAddress(address);
+		if(advisorFromDb.isPresent()) {
+			Advisor advisor = advisorFromDb.get();
+			AdvisorResponse advisorResponse = new AdvisorResponse(
+					advisor.getAdvisorId(), advisor.getFirstName(),
+					advisor.getLastName(), advisor.getAddress(),
+					advisor.getEmail(), advisor.getPhone());
+			return advisorResponse;
+		}
+		return null;
 	}
 
 }
-
 
 
 

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-@ExceptionHandler(UserNotFoundException.class)
-public ResponseEntity<CustomErrorResponse>handleUserNotFoundException(UserNotFoundException e){
+@ExceptionHandler(ResourceNotFoundException.class)
+public ResponseEntity<CustomErrorResponse>handleUserNotFoundException(ResourceNotFoundException e){
 	logger.warn("User not found : {} " ,e.getMessage());
 	CustomErrorResponse error = new CustomErrorResponse();
 	
@@ -22,8 +22,8 @@ public ResponseEntity<CustomErrorResponse>handleUserNotFoundException(UserNotFou
 	return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 }
 
-@ExceptionHandler(AdvisorCreationException.class)
-public ResponseEntity<CustomErrorResponse>handleAdvisorCreationException(AdvisorCreationException e){
+@ExceptionHandler(ResourceCreationException.class)
+public ResponseEntity<CustomErrorResponse>handleAdvisorCreationException(ResourceCreationException e){
 	logger.warn("Advisor creation failed.Email should be unique");
 	CustomErrorResponse error = new CustomErrorResponse();
 	error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

@@ -1,10 +1,9 @@
 package com.wellsfargo.counselor.repository;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import com.wellsfargo.counselor.entity.Advisor;
 
 @Repository
@@ -21,5 +20,6 @@ public interface AdvisorRepository extends JpaRepository<Advisor, Long> {
 
 	List<Advisor> findByEmail(String email);
 
-	List<Advisor> findByAddress(String address);
+	Optional<Advisor> findByAddress(String address);
+
 }

@@ -107,36 +107,25 @@ public class AdvisorRequestValidator {
 	protected void basicValidation(AdvisorRequest advisorRequest, List<String> errors) {
 	
 		// Validate FirstName
-		logger.info("Validating the first name: " + advisorRequest.getFirstName());
+		logger.info("Validating the first name: {} ", advisorRequest.getFirstName());
 		isFirstNameValid(advisorRequest.getFirstName(),errors);
 		
 		// Validate LastName
-		logger.info("Validating the last name: " + advisorRequest.getLastName());
+		logger.info("Validating the last name: {} ", advisorRequest.getLastName());
 		isLastNameValid(advisorRequest.getLastName(),errors);
 		
 		// Validate Email
-		logger.info("Validating the email address: " + advisorRequest.getEmailAddress());
+		logger.info("Validating the email address: {} ", advisorRequest.getEmailAddress());
 		isEmailValid(advisorRequest.getEmailAddress(),errors);
 		
 		// Validate PhoneNumber
-		logger.info("Validating the phone number: " + advisorRequest.getPhoneNumber());
+		logger.info("Validating the phone number: {} ", advisorRequest.getPhoneNumber());
 		isPhoneNumberValid(advisorRequest.getPhoneNumber(),errors);
 		
 		// Validate Address
-		logger.info("Validating the address: " + advisorRequest.getAddress());
+		logger.info("Validating the address: {} ", advisorRequest.getAddress());
 		isAddressValid(advisorRequest.getAddress(),errors);
 		
-	}
-	
-	protected void isEmailValid(String email, List<String> errors) {		
-	    if (email == null || email.isBlank()) {
-	    	logger.error("Email cannot be null or blank");
-	       errors.add("Email cannot be null or blank");
-	    }
-	    else if(!EMAIL_PATTERN.matcher(email).matches()){
-	    	logger.error("Invalid email entered");
-	    	errors.add("Invalid email entered");
-	    }
 	}
 	
 	protected void isFirstNameValid(String firstName, List<String> errors) {
@@ -165,6 +154,17 @@ public class AdvisorRequestValidator {
 			logger.error("Last name can only have alpha characters");
 			errors.add("Last name can only have alpha characters");
 		}
+	}
+	
+	protected void isEmailValid(String email, List<String> errors) {		
+	    if (email == null || email.isBlank()) {
+	    	logger.error("Email cannot be null or blank");
+	       errors.add("Email cannot be null or blank");
+	    }
+	    else if(!EMAIL_PATTERN.matcher(email).matches()){
+	    	logger.error("Invalid email entered");
+	    	errors.add("Invalid email entered");
+	    }
 	}
 	
 	protected void isPhoneNumberValid(String phone, List<String> errors) {

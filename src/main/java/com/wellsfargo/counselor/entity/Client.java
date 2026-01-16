@@ -1,5 +1,7 @@
 package com.wellsfargo.counselor.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,9 +12,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "client")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Client {
 	
 	@Id
@@ -43,20 +53,21 @@ public class Client {
 	
 	@ManyToOne
 	@JoinColumn(name="advisor_id", nullable = false)
+	// @JsonManagedReference // tells Jackson: serialize this side
 	private Advisor advisor;
-
+	/* 
 	protected Client() {
 
     }
 
-  /*  public Client(String firstName, String lastName, String address, String phone, String email) {
+   public Client(String firstName, String lastName, String address, String phone, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phone = phone;
         this.email = email;
     }
-    */
+
     public Client(String firstName, String lastName, String address, String phone, String email, Advisor advisor) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -118,5 +129,5 @@ public class Client {
     public void setEmail(String email) {
         this.email = email;
     }
-
+*/
 }

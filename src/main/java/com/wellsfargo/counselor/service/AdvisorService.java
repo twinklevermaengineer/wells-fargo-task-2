@@ -5,15 +5,18 @@ import java.util.Optional;
 
 import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
+import com.wellsfargo.counselor.model.request.AdvisorResponse;
 
 public interface AdvisorService {
-	Optional<Advisor> findById(Long id);
+	AdvisorResponse findById(Long id);
 
 	Long save(AdvisorRequest advisorRequest);
 	
-	List<Advisor> findAll();
+	List<AdvisorResponse> findAll();
  
 	void deleteById(Long id);
 	
 	void updateAdvisor(Long id, AdvisorRequest advisorRequest);
+
+	AdvisorResponse findByAddress(String address);
 }

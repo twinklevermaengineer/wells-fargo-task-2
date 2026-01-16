@@ -1,9 +1,9 @@
 package com.wellsfargo.counselor.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
+import com.wellsfargo.counselor.model.request.AdvisorResponse;
 import com.wellsfargo.counselor.repository.AdvisorRepository;
 import com.wellsfargo.counselor.utils.AdvisorRequestValidator;
 
@@ -56,10 +57,10 @@ public class AdvisorServiceImplTest {
 		when(advisorRepository.findById(id)).thenReturn(Optional.of(advisor));
 		
 		// Act
-		Optional<Advisor> result = advisorServiceImpl.findById(id); 
+		AdvisorResponse result = advisorServiceImpl.findById(id); 
 		
 		// Assert
-		assertTrue(result.get() !=null);	
+		assertTrue(result !=null);	
 	}
 
 	@Test
@@ -70,10 +71,10 @@ public class AdvisorServiceImplTest {
 		when(advisorRepository.findById(id)).thenReturn(Optional.empty());
 
 		// Act
-		Optional<Advisor> result = advisorServiceImpl.findById(id);
+		AdvisorResponse result = advisorServiceImpl.findById(id);
 		
 		// Assert
-		assertTrue(result.isEmpty());
+		assertFalse(result != null);
 	}
 
 	@Test
@@ -82,9 +83,9 @@ public class AdvisorServiceImplTest {
 		//Arrange
 		List<String> errors = new ArrayList<>();
 
-		Advisor advisorEntity = new Advisor(advisorRequest.getAddress()
+		Advisor advisorEntity = new Advisor(null, advisorRequest.getAddress()
 				,advisorRequest.getFirstName(),advisorRequest.getLastName()
-				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress());
+				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);
         
 		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisorEntity);
 
@@ -99,8 +100,8 @@ public class AdvisorServiceImplTest {
 	void findAll_success() {
 
 	//Arrange
-	Advisor advisor = new Advisor("1325,Plano","John"
-			,"Doe","1234567895","johndoe@gmail.com");
+	Advisor advisor = new Advisor(null, "135, Albany NewYork","John"
+			,"Doe","1234567895","johndoe@gmail.com", null);
 	
 	List<Advisor> advisorList = new ArrayList<>();
 	advisorList.add(advisor);
@@ -108,24 +109,33 @@ public class AdvisorServiceImplTest {
 	when(advisorRepository.findAll()).thenReturn(advisorList);
 
 	//Act
-	List<Advisor> result = advisorServiceImpl.findAll();
+	List<AdvisorResponse> result = advisorServiceImpl.findAll();
 
 	//Assert
 	assertFalse(result.isEmpty());
 
 	}
 	
-	/*
 	@Test
 	void updateAdvisor_success() {
 		//Arrange
-		List<String> errors = new ArrayList<>();
-		Long id = 1L;	
+		Long id = 1L;
+		Advisor advisor = new Advisor(null, advisorRequest.getAddress(),
+				advisorRequest.getFirstName(), advisorRequest.getLastName(),
+				advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);	
+		when(advisorRepository.findById(id)).thenReturn(Optional.of(advisor));
+		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisor);
+
+		//Act
+		advisorServiceImpl.updateAdvisor(id, advisorRequest);
 		
-		
-		when(advisorRepository.findById(id)).thenReturn(Optional.of(advisor));			
+		//Assert
+		assertEquals(advisorRequest.getFirstName(), advisor.getFirstName());
+		assertEquals(advisorRequest.getLastName(), advisor.getLastName());
+		assertEquals(advisorRequest.getAddress(), advisor.getAddress());
+		assertEquals(advisorRequest.getPhoneNumber(), advisor.getPhone());
+		assertEquals(advisorRequest.getEmailAddress(), advisor.getEmail());
 	}
-*/
 }
 
 

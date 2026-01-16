@@ -1,7 +1,6 @@
 package com.wellsfargo.counselor.controller;
 
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
-import com.wellsfargo.counselor.rest.UserNotFoundException;
+import com.wellsfargo.counselor.model.request.AdvisorResponse;
+import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.service.AdvisorService;
 
 @RestController
@@ -31,9 +30,9 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 	private AdvisorService advisorService;
 	
 	@GetMapping("/allAdvisors")
-		public ResponseEntity <List<Advisor>> findAllAdvisor() {
+		public ResponseEntity<List<AdvisorResponse>> findAllAdvisor() {
 		logger.info("Fetching all the advisors");
-		List<Advisor> advisor = advisorService.findAll();
+		List<AdvisorResponse> advisor = advisorService.findAll();
 		if(advisor.isEmpty()) {
 			logger.error("Advisors not found");
 			return ResponseEntity.noContent().build();
@@ -43,27 +42,27 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 	}
 	
 	@GetMapping("/advisors")
-	public ResponseEntity<Advisor> getAdvisor(@RequestParam Long id) {
-		logger.info("Fetching advisor by id {} :" , id);
-		Optional<Advisor> advisor = advisorService.findById(id);
-		if(advisor.isPresent()) {
-			logger.info("Advisor found with id {}", id);
-			return ResponseEntity.ok(advisor.get());
+	public ResponseEntity<AdvisorResponse> getAdvisor(@RequestParam String address) {
+		logger.info("Fetching advisor with address {} " , address);
+		AdvisorResponse advisor = advisorService.findByAddress(address);
+		if(advisor != null) {
+			logger.info("Advisor found with address {}", address);
+			return ResponseEntity.ok(advisor);
 		}
-			logger.error("Advisor not found with id {} :" , id);
-		throw new UserNotFoundException("Advisor not found with id " + id);
+			logger.error("Advisor not found with address {} " , address);
+		throw new ResourceNotFoundException("Advisor not found with address " + address);
 		}
 	
 	@GetMapping("/advisors/{id}")
-	public ResponseEntity<Advisor> getAdvisorById(@PathVariable Long id) {
-	logger.info("Fetching advisor with id");	
-	Optional<Advisor> advisor =	advisorService.findById(id);
-		if(advisor.isPresent()) {
+	public ResponseEntity<AdvisorResponse> getAdvisorById(@PathVariable Long id) {
+	logger.info("Fetching advisor b id: {} ", id);	
+	AdvisorResponse advisor =	advisorService.findById(id);
+		if(advisor != null) {
 			logger.info("Found advisor with id {}" , advisor);
-			return ResponseEntity.ok(advisor.get());
+			return ResponseEntity.ok(advisor);
 		}else {
 			logger.error("Advisor not found with id {} ", id);
-		throw new UserNotFoundException("Advisor not found " + id);
+		throw new ResourceNotFoundException("Advisor not found " + id);
 		}
 	}
 	
