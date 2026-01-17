@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ public class AdvisorRequestValidatorTest {
 		//Mock repository to return empty list
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
-		when(advisorRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
 		validator.validateAdvisorRequest(validRequest, null, errors);
 		
@@ -66,7 +67,7 @@ public class AdvisorRequestValidatorTest {
 		//Mock repository to return one Advisor with same email
 		when(advisorRepository.findByEmail(anyString())).thenReturn(List.of(new Advisor()));
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
-		when(advisorRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
 		validator.validateAdvisorRequest(validRequest, null, errors);
 		//Assert that error message for duplicate email is present
@@ -79,7 +80,7 @@ public class AdvisorRequestValidatorTest {
 		//Mock repository to return one Advisor with same phone number
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(List.of(new Advisor()));
-		when(advisorRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		validator.validateAdvisorRequest(validRequest, null, errors);
 		
 		//Assert that error message for duplicate phone number is present
@@ -92,7 +93,7 @@ public class AdvisorRequestValidatorTest {
 	void validateForCreate_duplicateAddress() {
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
-		when(advisorRepository.findByAddress(anyString())).thenReturn(List.of(new Advisor()));
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.of(new Advisor()));
 		
 		validator.validateAdvisorRequest(validRequest, null, errors);
 		//Assert that error message for duplicate address is present
@@ -115,7 +116,7 @@ public class AdvisorRequestValidatorTest {
 		//Mock repository to return no duplicates
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
-		when(advisorRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		validator.validateForUpdate(validRequest, 1L, errors);
 		//Assert that no errors found
 		assertTrue(errors.isEmpty());
@@ -133,7 +134,7 @@ public class AdvisorRequestValidatorTest {
 		
 		when(advisorRepository.findByEmail(anyString())).thenReturn(existingAdvisorList);
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
-		when(advisorRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
 		validator.validateForUpdate(validRequest, 1L, errors);
 		assertTrue(errors.contains("Duplicate email found"));
@@ -150,7 +151,7 @@ public class AdvisorRequestValidatorTest {
 		
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(existingAdvisorList);
-		when(advisorRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
 		validator.validateForUpdate(validRequest, 1L, errors);
 		assertTrue(errors.contains("Duplicate phone number found"));
@@ -162,12 +163,12 @@ public class AdvisorRequestValidatorTest {
 		Advisor existingAdvisor = new Advisor();
 		existingAdvisor.setAddress("456, NewYork");
 		
-		List<Advisor> existingAdvisorList = new ArrayList<>();
-		existingAdvisorList.add(existingAdvisor);
+		//List<Advisor> existingAdvisorList = new ArrayList<>();
+		//existingAdvisorList.add(existingAdvisor);
 		
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
-		when(advisorRepository.findByAddress(anyString())).thenReturn(existingAdvisorList);
+		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.of(existingAdvisor));
 		
 		validator.validateForUpdate(validRequest, 1L, errors);
 		assertTrue(errors.contains("Duplicate address found"));

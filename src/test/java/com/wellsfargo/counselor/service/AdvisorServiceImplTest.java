@@ -2,6 +2,8 @@ package com.wellsfargo.counselor.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -18,6 +20,7 @@ import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
 import com.wellsfargo.counselor.model.request.AdvisorResponse;
 import com.wellsfargo.counselor.repository.AdvisorRepository;
+import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.AdvisorRequestValidator;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,16 +68,15 @@ public class AdvisorServiceImplTest {
 
 	@Test
 	void findById_fail() {
-		
-		// Arrange
-		Long id = 1L;
-		when(advisorRepository.findById(id)).thenReturn(Optional.empty());
 
-		// Act
-		AdvisorResponse result = advisorServiceImpl.findById(id);
-		
-		// Assert
-		assertFalse(result != null);
+	    // Arrange
+	    Long id = 1L;
+	    when(advisorRepository.findById(id)).thenReturn(Optional.empty());
+
+	    // Act & Assert
+	    assertThrows(ResourceNotFoundException.class, () -> {
+	        advisorServiceImpl.findById(id);
+	    });
 	}
 
 	@Test
@@ -90,9 +92,10 @@ public class AdvisorServiceImplTest {
 		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisorEntity);
 
 		///Act
-        advisorServiceImpl.save(advisorRequest);
+       AdvisorResponse response = advisorServiceImpl.save(advisorRequest);
 
 		//Assert
+        assertNotNull(response);
 		assertTrue(errors.isEmpty());
 	}
 

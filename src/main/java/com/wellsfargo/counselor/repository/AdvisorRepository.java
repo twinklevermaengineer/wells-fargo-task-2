@@ -19,7 +19,8 @@ public interface AdvisorRepository extends JpaRepository<Advisor, Long> {
 	List<Advisor> findByPhone(String phone);
 
 	List<Advisor> findByEmail(String email);
-
+	
 	Optional<Advisor> findByAddress(String address);
+
 
 }

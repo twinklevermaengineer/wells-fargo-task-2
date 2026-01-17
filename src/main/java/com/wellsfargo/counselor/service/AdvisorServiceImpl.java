@@ -38,23 +38,21 @@ public class AdvisorServiceImpl implements AdvisorService {
 	public AdvisorResponse findById(Long id) {
 		logger.info("Find Advisor using id " + id);
 		
-		Optional<Advisor> advisorFromDB = advisorRepository.findById(id);
-		if(advisorFromDB.isPresent()) {
-			Advisor advisor = advisorFromDB.get();
-			AdvisorResponse advisorResponse = new AdvisorResponse(
-					id, advisor.getFirstName(),
-					advisor.getLastName(),
-					advisor.getAddress(),
-					advisor.getPhone(),
-					advisor.getEmail());
-			return advisorResponse;
+		Advisor advisorFromDB = advisorRepository.findById(id)
+				.orElseThrow(() -> 
+						new ResourceNotFoundException("Advisor not found with id " + id));
+		
+		return new AdvisorResponse(
+					id, advisorFromDB.getFirstName(),
+					advisorFromDB.getLastName(),
+					advisorFromDB.getAddress(),
+					advisorFromDB.getPhone(),
+					advisorFromDB.getEmail());
 		}
-		return null;
-	}
 
 	@Override
 	@Transactional
-	public Long save(AdvisorRequest advisorRequest) {
+	public AdvisorResponse save(AdvisorRequest advisorRequest) {
 		
 		// Validate Input request
 		List<String> errorMessages = new ArrayList<>();
@@ -64,14 +62,32 @@ public class AdvisorServiceImpl implements AdvisorService {
 			errorMessages.add("Invalid advisor request for " + advisorRequest);
 			throw new InvalidRequestException("Invalid Advisor Request," + advisorRequest.toString());
 		}
-	
+		try {
 		// Map Request object to Entity Object
 		Advisor advisorEntity = new Advisor(null, advisorRequest.getFirstName()
 				,advisorRequest.getLastName(),advisorRequest.getAddress()
 				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);
 
-		try {
+		
 		  Advisor saveAdvisor = advisorRepository.save(advisorEntity);
+		  if(saveAdvisor != null) {
+			 // Map Entity object to Response object
+			  AdvisorResponse advisorResponse = new AdvisorResponse(
+					  saveAdvisor.getAdvisorId(), saveAdvisor.getFirstName(),
+					  saveAdvisor.getLastName(),saveAdvisor.getEmail(),
+					  saveAdvisor.getPhone(),saveAdvisor.getAddress());
+			  return advisorResponse;
+		  }
+		} catch(Exception excp) {
+			throw new ResourceCreationException("Advisor creation failed, request: " + advisorRequest.toString() + ",excp:" + excp.getMessage());
+		}
+		return null;
+	}
+		  
+		  
+		  
+		  
+		 /*
 		  if (ObjectUtils.isEmpty(saveAdvisor)) {
 			  logger.error("Unexpected error occured while saving Advisor entity");
 			  throw new Exception("Unexpected error occured while saving Advisor entity");
@@ -98,8 +114,8 @@ public class AdvisorServiceImpl implements AdvisorService {
 			throw new ResourceCreationException("Error occured while saving advisor object, "
 			+ excp.getMessage());
 		}
-	}
-
+		*/
+	
 
 	@Override
 	@Transactional
@@ -149,42 +165,18 @@ public class AdvisorServiceImpl implements AdvisorService {
 	
 	@Override
 	public AdvisorResponse findByAddress(String address) {
-		Optional<Advisor> advisorFromDb = advisorRepository.findByAddress(address);
-		if(advisorFromDb.isPresent()) {
-			Advisor advisor = advisorFromDb.get();
-			AdvisorResponse advisorResponse = new AdvisorResponse(
-					advisor.getAdvisorId(), advisor.getFirstName(),
-					advisor.getLastName(), advisor.getAddress(),
-					advisor.getEmail(), advisor.getPhone());
-			return advisorResponse;
-		}
-		return null;
+		
+		Advisor advisorFromDb = advisorRepository.findByAddress(address)
+				.orElseThrow(() -> 
+				new ResourceNotFoundException("Advisor not found with address " + address));
+		
+			return new AdvisorResponse(
+					advisorFromDb.getAdvisorId(),
+					advisorFromDb.getFirstName(), 
+					advisorFromDb.getLastName(),
+					advisorFromDb.getEmail(),
+					advisorFromDb.getPhone(),
+					advisorFromDb.getAddress());	
 	}
-
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

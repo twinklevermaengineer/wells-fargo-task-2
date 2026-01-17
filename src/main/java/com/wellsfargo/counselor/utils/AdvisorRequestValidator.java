@@ -2,6 +2,7 @@ package com.wellsfargo.counselor.utils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -57,10 +58,10 @@ public class AdvisorRequestValidator {
 			errors.add("Advisor found with similar phone number");
 		}
 		
-		List<Advisor> existingAdvisorAddress = advisorRepository
+		Optional<Advisor> existingAdvisorAddress = advisorRepository
 				.findByAddress(advisorRequest.getAddress());
 		
-		if(existingAdvisorAddress.size() > 0) {
+		if(existingAdvisorAddress.isPresent()) {
 			logger.error("Advisor found during create new advisor with same address");
 			errors.add("Advisor found with similar address");
 		}
@@ -95,13 +96,13 @@ public class AdvisorRequestValidator {
 			}
 		}
 		String address = advisorRequest.getAddress();
-			List<Advisor> existingAddress = advisorRepository.findByAddress(address);
-			for(Advisor advisor: existingAddress) {
-				if(!Objects.equals(advisor.getAdvisorId(), inputAdvisorId)) {
-					logger.error("Duplicate address found");
-					errors.add("Duplicate address found");
-			}
-		}
+		advisorRepository.findByAddress(address)
+        .ifPresent(advisor -> {
+            if (!Objects.equals(advisor.getAdvisorId(), inputAdvisorId)) {
+                logger.error("Duplicate address found");
+                errors.add("Duplicate address found");
+            }
+		});
    }
 	
 	protected void basicValidation(AdvisorRequest advisorRequest, List<String> errors) {
@@ -187,50 +188,3 @@ public class AdvisorRequestValidator {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-private boolean validateForUpdate(AdvisorRequest advisorRequest, Long inputAdvisorId) {
-logger.info("Checking additional validation for updating advisorRequest {} with inputAdvisorId {} ", advisorRequest, inputAdvisorId);
-String emailAddress = advisorRequest.getEmailAddress();
-String phoneNumber = advisorRequest.getPhoneNumber();
-String address = advisorRequest.getAddress();
-
-List<Advisor> findByEmailOrPhoneOrAddress = advisorRepository.findByEmailOrPhoneOrAddress(emailAddress, phoneNumber, address);
-logger.info("Checking if email {} ,phone {},address {} exists ", emailAddress, phoneNumber, address);
-if(!findByEmailOrPhoneOrAddress.isEmpty()) {
-	Long advisorId = findByEmailOrPhoneOrAddress.get(0).getAdvisorId();
-	logger.info("Checking if input advisor id is not empty");
-	if (inputAdvisorId != null) {
-		logger.info("Checking if input advisor id and advisor id is same");
-		if (!advisorId.equals(inputAdvisorId)) {
-			logger.error("Advisor id and input advisor id is not same");
-			return false;
-		}			
-	} else {
-		return false;
-	}
-}
-return true;
-}
-*/

@@ -10,7 +10,7 @@ import com.wellsfargo.counselor.model.request.AdvisorResponse;
 public interface AdvisorService {
 	AdvisorResponse findById(Long id);
 
-	Long save(AdvisorRequest advisorRequest);
+	AdvisorResponse save(AdvisorRequest advisorRequest);
 	
 	List<AdvisorResponse> findAll();
  
@@ -19,4 +19,5 @@ public interface AdvisorService {
 	void updateAdvisor(Long id, AdvisorRequest advisorRequest);
 
 	AdvisorResponse findByAddress(String address);
+
 }
