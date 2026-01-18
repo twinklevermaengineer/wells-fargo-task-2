@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +54,7 @@ public class AdvisorServiceImplTest {
 	}
 	
 	@Test
-	void findById_success(){
+	void findById_whenAdvisorFoundWithId_success(){
 
 		// Arrange
 	    advisor = new Advisor();
@@ -63,31 +65,34 @@ public class AdvisorServiceImplTest {
 		AdvisorResponse result = advisorServiceImpl.findById(id); 
 		
 		// Assert
-		assertTrue(result !=null);	
+		assertNotNull(result);
+		verify(advisorRepository, times(1)).findById(id);
 	}
 
 	@Test
-	void findById_fail() {
+	void findById_whenNoAdvisorFoundWithId_fail() {
 
 	    // Arrange
 	    Long id = 1L;
 	    when(advisorRepository.findById(id)).thenReturn(Optional.empty());
 
 	    // Act & Assert
-	    assertThrows(ResourceNotFoundException.class, () -> {
-	        advisorServiceImpl.findById(id);
-	    });
-	}
+	   ResourceNotFoundException exception =
+			   assertThrows(ResourceNotFoundException.class,
+					  () -> {advisorServiceImpl.findById(id);
+					  	});
+	   assertTrue(exception.getMessage().contains("Advisor not found with id " + id));
+	   verify(advisorRepository).findById(id);
+	}	
 
 	@Test
-	void saveAdvisor_success() {
+	void saveAdvisor_whenAdvisorSaved_success() {
 		
 		//Arrange
-		List<String> errors = new ArrayList<>();
-
-		Advisor advisorEntity = new Advisor(null, advisorRequest.getAddress()
-				,advisorRequest.getFirstName(),advisorRequest.getLastName()
-				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);
+		Advisor advisorEntity = new Advisor(
+				null,advisorRequest.getFirstName(),advisorRequest.getLastName(),
+				 advisorRequest.getAddress(), advisorRequest.getPhoneNumber(),
+				 advisorRequest.getEmailAddress(), null);
         
 		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisorEntity);
 
@@ -96,11 +101,13 @@ public class AdvisorServiceImplTest {
 
 		//Assert
         assertNotNull(response);
-		assertTrue(errors.isEmpty());
+        assertEquals(advisorRequest.getFirstName(), response.getFirstName());
+        verify(advisorRepository, times(1)).save(any(Advisor.class));
+
 	}
 
 	@Test
-	void findAll_success() {
+	void findAll_whenAdvisorFound_success() {
 
 	//Arrange
 	Advisor advisor = new Advisor(null, "135, Albany NewYork","John"
@@ -116,11 +123,26 @@ public class AdvisorServiceImplTest {
 
 	//Assert
 	assertFalse(result.isEmpty());
-
+	verify(advisorRepository).findAll();
+		
 	}
 	
 	@Test
-	void updateAdvisor_success() {
+	void findAll_whenNoAdvisorFound_fail() {
+		//Arrange
+		when(advisorRepository.findAll()).thenReturn(List.of());
+		
+		//Act
+		List<AdvisorResponse> result = advisorServiceImpl.findAll();
+		
+		//Assert
+		assertTrue(result.isEmpty());
+		verify(advisorRepository).findAll();
+		
+	}
+	
+	@Test
+	void updateAdvisor_whenAdvisorUpdated_success() {
 		//Arrange
 		Long id = 1L;
 		Advisor advisor = new Advisor(null, advisorRequest.getAddress(),
@@ -138,8 +160,27 @@ public class AdvisorServiceImplTest {
 		assertEquals(advisorRequest.getAddress(), advisor.getAddress());
 		assertEquals(advisorRequest.getPhoneNumber(), advisor.getPhone());
 		assertEquals(advisorRequest.getEmailAddress(), advisor.getEmail());
+		verify(advisorRepository, times(1)).save(any(Advisor.class));
 	}
-}
+	
+	@Test
+	void updateAdvisor_whenNoAdvisorUpdated_fail() {
+		//Arrange
+		Long id = 1L;
+		when(advisorRepository.findById(id)).thenReturn(Optional.empty());
+		
+		//Act and Assert
+		ResourceNotFoundException exception = assertThrows(
+				ResourceNotFoundException.class, () -> {
+					advisorServiceImpl.updateAdvisor(id, advisorRequest);
+				});
+		
+		assertTrue(exception.getMessage().contains("Advisor not found with id " + id));
+		
+	}
+	
+	
+}	
 
 
 

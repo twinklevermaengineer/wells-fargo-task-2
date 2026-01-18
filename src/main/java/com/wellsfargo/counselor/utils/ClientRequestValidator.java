@@ -55,16 +55,16 @@ public class ClientRequestValidator {
 				}
 			}
 			
-			List<Client> existingClientPhone = clientRepository
+			List<Client> existingClientListUsingPhone = clientRepository
 					.findByPhone(clientRequest.getPhone());
 			
-			if(existingClientPhone.size() > 0) {
+			if(existingClientListUsingPhone.size() > 0) {
 
 				if(action.equals("create")) {
 					logger.error("Client with similar phone number found");
 					errors.add("Client with similar phone number found");
 				}else if(action.equals("update")){
-					 for(Client client: existingClientPhone) {
+					 for(Client client: existingClientListUsingPhone) {
 						 if(!Objects.equals(client.getClientId(), inputClientId)) {
 							 logger.error("Different client with similar phone number found");
 							 errors.add("Different client with similar phone number found");
@@ -73,16 +73,16 @@ public class ClientRequestValidator {
 			}
 		}
 
-			List<Client> existingClientAddress = clientRepository
+			List<Client> existingClientListUsingAddress = clientRepository
 					.findByAddress(clientRequest.getAddress());
 			
-			if(existingClientAddress.size() > 0) {
+			if(existingClientListUsingAddress.size() > 0) {
 				
 				if(action.equals("create")) {
 					logger.error("Client with similar address found");
 					errors.add("Client with similar address found");
 				}else if(action.equals("update")) {
-				for(Client client: existingClientAddress) {
+				for(Client client: existingClientListUsingAddress) {
 					if(!Objects.equals(client.getClientId(), inputClientId)) {
 						logger.error("Different client with similar address found");
 						errors.add("Different client with similar address found");
