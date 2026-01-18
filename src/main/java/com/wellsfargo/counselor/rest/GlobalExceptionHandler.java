@@ -24,7 +24,7 @@ public ResponseEntity<CustomErrorResponse>handleUserNotFoundException(ResourceNo
 
 @ExceptionHandler(ResourceCreationException.class)
 public ResponseEntity<CustomErrorResponse>handleAdvisorCreationException(ResourceCreationException e){
-	logger.warn("Advisor creation failed.Email should be unique");
+	logger.warn("Resource creation failed: {} ", e.getMessage());
 	CustomErrorResponse error = new CustomErrorResponse();
 	error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	error.setMessage(e.getMessage());
@@ -34,13 +34,25 @@ public ResponseEntity<CustomErrorResponse>handleAdvisorCreationException(Resourc
 
 @ExceptionHandler(InvalidRequestException.class)
 public ResponseEntity<CustomErrorResponse>handleInvalidRequest(InvalidRequestException e){
-	logger.warn("Invalid advisor request");
+	logger.warn("Invalid resource request: {} ", e.getMessage());
 	CustomErrorResponse error = new CustomErrorResponse();
 	error.setStatus(HttpStatus.BAD_REQUEST.value());
 	error.setMessage(e.getMessage());
 	
 	return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 }
+
+@ExceptionHandler(ServerException.class)
+public ResponseEntity<CustomErrorResponse>handleServerException(ServerException e){
+	logger.warn("Server exception occured: {} ", e.getMessage());
+	CustomErrorResponse error = new CustomErrorResponse();
+	error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	error.setMessage(e.getMessage());
+	
+	return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+	
+}
+
 @ExceptionHandler(Exception.class)
 public ResponseEntity<CustomErrorResponse>handleExceptions(Exception e){
 	logger.warn("Unhandled exception occured : {} ", e.getMessage());

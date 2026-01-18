@@ -2,14 +2,10 @@ package com.wellsfargo.counselor.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import com.wellsfargo.counselor.repository.AdvisorRepository;
 import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
@@ -83,39 +79,6 @@ public class AdvisorServiceImpl implements AdvisorService {
 		}
 		return null;
 	}
-		  
-		  
-		  
-		  
-		 /*
-		  if (ObjectUtils.isEmpty(saveAdvisor)) {
-			  logger.error("Unexpected error occured while saving Advisor entity");
-			  throw new Exception("Unexpected error occured while saving Advisor entity");
-		  }
-		  
-		  Long advisorId = saveAdvisor.getAdvisorId();
-		  logger.info("Advisor created, id: {}", advisorId);
-		  return advisorId;
-		}
-		catch (DataIntegrityViolationException excp) {
-			Throwable rootCause = excp.getRootCause();
-
-			String error = "Unknown Error";
-		    if (rootCause != null && rootCause.getMessage() != null) {
-		        if (rootCause.getMessage().contains("Duplicate entry")) {
-		            error = "Email " + advisorRequest.getEmailAddress()
-		            + " already exists. Please use a different email address.";
-		        }
-	    }		    
-			throw new ResourceCreationException("Error occured while saving advisor object, "
-			+ error);
-		}
-		catch (Exception excp) {
-			throw new ResourceCreationException("Error occured while saving advisor object, "
-			+ excp.getMessage());
-		}
-		*/
-	
 
 	@Override
 	@Transactional

@@ -90,6 +90,7 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 	public ResponseEntity<String> updateAdvisor(
 			@PathVariable Long id, 
 			@RequestBody AdvisorRequest advisorRequest){
+		
 		advisorService.updateAdvisor(id, advisorRequest);
 		
 		return ResponseEntity.ok("Advisor updated successfully for id " + id);	
