@@ -43,7 +43,7 @@ public class AdvisorRequestValidator {
 		};
 		
 		List<Advisor> existingAdvisorEmail = advisorRepository
-				.findByEmail(advisorRequest.getEmailAddress());
+				.findByEmail(advisorRequest.getEmail());
 		
 		if(existingAdvisorEmail.size() > 0) {
 			logger.error("Advisor found during create new advisor with same email");
@@ -51,7 +51,7 @@ public class AdvisorRequestValidator {
 		}
 		
 		List<Advisor> existingAdvisorPhone = advisorRepository
-				.findByPhone(advisorRequest.getPhoneNumber());
+				.findByPhone(advisorRequest.getPhone());
 		
 		if(existingAdvisorPhone.size() > 0) {
 			logger.error("Advisor found during create new advisor with same phone");
@@ -76,10 +76,9 @@ public class AdvisorRequestValidator {
     	basicValidation(advisorRequest, errors);
 		if(!errors.isEmpty()) {
 			logger.error("Failed basic validation for update");
-			errors.add("Failed basic validation for update");
-			}
+		}
 		
-		String email = advisorRequest.getEmailAddress();
+		String email = advisorRequest.getEmail();
 			List<Advisor> existingEmail = advisorRepository.findByEmail(email);
 			for(Advisor advisor: existingEmail) {
 				if(!Objects.equals(advisor.getAdvisorId(), inputAdvisorId)) {
@@ -87,7 +86,7 @@ public class AdvisorRequestValidator {
 					errors.add("Duplicate email found");
 			}		
        }
-		String phone = advisorRequest.getPhoneNumber();
+		String phone = advisorRequest.getPhone();
 			List<Advisor> existingPhoneNumber = advisorRepository.findByPhone(phone);
 			for(Advisor advisor: existingPhoneNumber) {
 				if(!Objects.equals(advisor.getAdvisorId(), inputAdvisorId)) {
@@ -116,12 +115,12 @@ public class AdvisorRequestValidator {
 		isLastNameValid(advisorRequest.getLastName(),errors);
 		
 		// Validate Email
-		logger.info("Validating the email address: {} ", advisorRequest.getEmailAddress());
-		isEmailValid(advisorRequest.getEmailAddress(),errors);
+		logger.info("Validating the email address: {} ", advisorRequest.getEmail());
+		isEmailValid(advisorRequest.getEmail(),errors);
 		
 		// Validate PhoneNumber
-		logger.info("Validating the phone number: {} ", advisorRequest.getPhoneNumber());
-		isPhoneNumberValid(advisorRequest.getPhoneNumber(),errors);
+		logger.info("Validating the phone number: {} ", advisorRequest.getPhone());
+		isPhoneNumberValid(advisorRequest.getPhone(),errors);
 		
 		// Validate Address
 		logger.info("Validating the address: {} ", advisorRequest.getAddress());
@@ -157,15 +156,11 @@ public class AdvisorRequestValidator {
 		}
 	}
 	
-	protected void isEmailValid(String email, List<String> errors) {		
-	    if (email == null || email.isBlank()) {
-	    	logger.error("Email cannot be null or blank");
-	       errors.add("Email cannot be null or blank");
-	    }
-	    else if(!EMAIL_PATTERN.matcher(email).matches()){
-	    	logger.error("Invalid email entered");
-	    	errors.add("Invalid email entered");
-	    }
+	protected void isAddressValid(String address, List<String> errors) {
+		if (address == null || address.isBlank()) { 
+			logger.error("Address is null or blank {} ", address);
+			errors.add("Address cannot be null or blank");
+		}
 	}
 	
 	protected void isPhoneNumberValid(String phone, List<String> errors) {
@@ -179,12 +174,17 @@ public class AdvisorRequestValidator {
 	   }
 	 }
 	
-	protected void isAddressValid(String address, List<String> errors) {
-		if (address == null || address.isBlank()) { 
-			logger.error("Address is null or blank {} ", address);
-			errors.add("Address cannot be null or blank");
-		}
+	protected void isEmailValid(String email, List<String> errors) {		
+	    if (email == null || email.isBlank()) {
+	    	logger.error("Email cannot be null or blank");
+	       errors.add("Email cannot be null or blank");
+	    }
+	    else if(!EMAIL_PATTERN.matcher(email).matches()){
+	    	logger.error("Invalid email entered");
+	    	errors.add("Invalid email entered");
+	    }
 	}
+
 }
 
 

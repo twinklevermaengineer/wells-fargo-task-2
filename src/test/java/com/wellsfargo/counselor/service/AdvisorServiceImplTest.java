@@ -6,6 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,16 +44,15 @@ public class AdvisorServiceImplTest {
 	private AdvisorRequest advisorRequest;
 	
 	private Advisor advisor;
-
-	
+		
 	@BeforeEach
 	void setUp() {
 	advisorRequest = new AdvisorRequest();
 	advisorRequest.setFirstName("Paul");
 	advisorRequest.setLastName("Doe");
-	advisorRequest.setEmailAddress("pauldoe@gmail.com");
-	advisorRequest.setPhoneNumber("1234567895");
 	advisorRequest.setAddress("1355, Texas");
+	advisorRequest.setPhone("1234567895");
+	advisorRequest.setEmail("pauldoe@gmail.com");
 	
 	}
 	
@@ -57,8 +60,10 @@ public class AdvisorServiceImplTest {
 	void findById_whenAdvisorFoundWithId_success(){
 
 		// Arrange
-	    advisor = new Advisor();
 		Long id = 15L;	
+	    advisor = new Advisor(id, "135, Albany NewYork","John"
+				,"Doe","1234567895","johndoe@gmail.com", null);
+		
 		when(advisorRepository.findById(id)).thenReturn(Optional.of(advisor));
 		
 		// Act
@@ -66,6 +71,12 @@ public class AdvisorServiceImplTest {
 		
 		// Assert
 		assertNotNull(result);
+		assertEquals(advisor.getAdvisorId(), result.getAdvisorId());
+		assertEquals(advisor.getFirstName(), result.getFirstName());
+		assertEquals(advisor.getLastName(), result.getLastName());
+		assertEquals(advisor.getAddress(), result.getAddress());
+		assertEquals(advisor.getPhone(), result.getPhone());
+		assertEquals(advisor.getEmail(), result.getEmail());
 		verify(advisorRepository, times(1)).findById(id);
 	}
 
@@ -89,11 +100,11 @@ public class AdvisorServiceImplTest {
 	void saveAdvisor_whenAdvisorSaved_success() {
 		
 		//Arrange
+		Long id = 1L;
 		Advisor advisorEntity = new Advisor(
-				null,advisorRequest.getFirstName(),advisorRequest.getLastName(),
-				 advisorRequest.getAddress(), advisorRequest.getPhoneNumber(),
-				 advisorRequest.getEmailAddress(), null);
-        
+				id,advisorRequest.getFirstName(),advisorRequest.getLastName(),
+				 advisorRequest.getAddress(), advisorRequest.getPhone(),
+				 advisorRequest.getEmail(), null);
 		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisorEntity);
 
 		///Act
@@ -102,8 +113,16 @@ public class AdvisorServiceImplTest {
 		//Assert
         assertNotNull(response);
         assertEquals(advisorRequest.getFirstName(), response.getFirstName());
-        verify(advisorRepository, times(1)).save(any(Advisor.class));
-
+        assertEquals(advisorRequest.getLastName(), response.getLastName());
+        assertEquals(advisorRequest.getAddress(), response.getAddress());
+        assertEquals(advisorRequest.getPhone(), response.getPhone());
+        assertEquals(advisorRequest.getEmail(), response.getEmail());
+        
+        verify(validator, times(1))
+        	.validateAdvisorRequest(eq(advisorRequest), isNull(), anyList());
+        
+        verify(advisorRepository, times(1))
+        	.save(any(Advisor.class));
 	}
 
 	@Test
@@ -123,6 +142,15 @@ public class AdvisorServiceImplTest {
 
 	//Assert
 	assertFalse(result.isEmpty());
+	assertEquals(1, result.size());
+	
+	AdvisorResponse response = result.get(0);
+	assertEquals(advisor.getAdvisorId(), response.getAdvisorId());
+	assertEquals(advisor.getFirstName(), response.getFirstName());
+	assertEquals(advisor.getLastName(), response.getLastName());
+	assertEquals(advisor.getAddress(), response.getAddress());
+	assertEquals(advisor.getPhone(), response.getPhone());
+	assertEquals(advisor.getEmail(), response.getEmail());
 	verify(advisorRepository).findAll();
 		
 	}
@@ -140,14 +168,15 @@ public class AdvisorServiceImplTest {
 		verify(advisorRepository).findAll();
 		
 	}
-	
+
 	@Test
 	void updateAdvisor_whenAdvisorUpdated_success() {
 		//Arrange
 		Long id = 1L;
-		Advisor advisor = new Advisor(null, advisorRequest.getAddress(),
+		Advisor advisor = new Advisor(id,
 				advisorRequest.getFirstName(), advisorRequest.getLastName(),
-				advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);	
+				advisorRequest.getAddress(),advisorRequest.getPhone(),
+				advisorRequest.getEmail(),null);	
 		when(advisorRepository.findById(id)).thenReturn(Optional.of(advisor));
 		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisor);
 
@@ -158,9 +187,15 @@ public class AdvisorServiceImplTest {
 		assertEquals(advisorRequest.getFirstName(), advisor.getFirstName());
 		assertEquals(advisorRequest.getLastName(), advisor.getLastName());
 		assertEquals(advisorRequest.getAddress(), advisor.getAddress());
-		assertEquals(advisorRequest.getPhoneNumber(), advisor.getPhone());
-		assertEquals(advisorRequest.getEmailAddress(), advisor.getEmail());
-		verify(advisorRepository, times(1)).save(any(Advisor.class));
+		assertEquals(advisorRequest.getPhone(), advisor.getPhone());
+		assertEquals(advisorRequest.getEmail(), advisor.getEmail());
+		
+		verify(validator, times(1))
+			.validateAdvisorRequest(eq(advisorRequest), eq(id), anyList());
+		verify(advisorRepository, times(1))
+			.findById(id);
+		verify(advisorRepository, times(1))
+			.save(any(Advisor.class));
 	}
 	
 	@Test
@@ -175,29 +210,11 @@ public class AdvisorServiceImplTest {
 					advisorServiceImpl.updateAdvisor(id, advisorRequest);
 				});
 		
-		assertTrue(exception.getMessage().contains("Advisor not found with id " + id));
+		assertTrue(exception.getMessage()
+					.contains("Advisor not found with id " + id));
 		
-	}
-	
-	
+		verify(advisorRepository, times(1)).findById(id);
+		verify(advisorRepository, never()).save(any());
+		
+	}	
 }	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

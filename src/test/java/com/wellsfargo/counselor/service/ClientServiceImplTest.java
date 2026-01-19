@@ -6,10 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +37,7 @@ public class ClientServiceImplTest {
 	
 	@Mock
 	private ClientRequestValidator validator;
-	
+
 	@InjectMocks
 	private ClientServiceImpl clientServiceImpl;
 	
@@ -41,16 +45,14 @@ public class ClientServiceImplTest {
 	
 	private Client client;
 	
-	private List<String> errors;
-	
 	@BeforeEach
 	void setUp() {
 		clientRequest = new ClientRequest();
 		clientRequest.setFirstName("John");
-		clientRequest.setLastName("Thompson");
-		clientRequest.setEmail("johnthompson@gmail.com");
-		clientRequest.setPhone("9985647123");
+		clientRequest.setLastName("Thompson");		
 		clientRequest.setAddress("879, Miami Fl");
+		clientRequest.setPhone("9985647123");
+		clientRequest.setEmail("johnthompson@gmail.com");
 	}
 	
 	@Test
@@ -75,12 +77,13 @@ public class ClientServiceImplTest {
 		when(clientRepository.findById(id)).thenReturn(Optional.empty());
 
 		//Act
-		ClientResponse result = clientServiceImpl.findById(id);
-
-		//Assert
-		assertNull(result);
-		verify(clientRepository).findById(id);
+		ClientResponse response = clientServiceImpl.findById(id);
 		
+		//Assert
+
+		assertNull(response);
+		verify(clientRepository).findById(id);
+
 	}
 	
 	@Test
@@ -96,7 +99,7 @@ public class ClientServiceImplTest {
 		
 		//Assert
 		assertNotNull(result);
-		assertTrue(result.size() == 1);
+		assertEquals(1, result.size());
 		verify(clientRepository).findByAddress(address);
 	}
 	
@@ -119,7 +122,9 @@ public class ClientServiceImplTest {
 	@Test
 	void findAll_whenClientFound_returnClientList_success() {
 		//Arrange
-		client = new Client();
+		client = new Client("John", "Richard", "johnrichard@gmail.com", "9594565214", "568, Tampa Fl");
+		List<Client> clientList = new ArrayList<>();
+		clientList.add(client);
 		when(clientRepository.findAll()).thenReturn(List.of(client));
 		
 		//Act
@@ -127,7 +132,16 @@ public class ClientServiceImplTest {
 		
 		//Assert
 		assertNotNull(result);
-		verify(clientRepository).findAll();
+		assertTrue(!result.isEmpty());
+		assertEquals(1, result.size());
+		ClientResponse response = result.get(0);
+		assertEquals(client.getClientId(), response.getClientId());
+		assertEquals(client.getFirstName(), response.getFirstName());
+		assertEquals(client.getLastName(), response.getLastName());
+		assertEquals(client.getAddress(), response.getAddress());
+		assertEquals(client.getPhone(), response.getPhone());
+		assertEquals(client.getEmail(), response.getEmail());
+		verify(clientRepository,times(1)).findAll();
 	}
 	
 	@Test
@@ -158,8 +172,9 @@ public class ClientServiceImplTest {
 		ClientResponse clientResponse = clientServiceImpl.save(clientRequest);
 		
 		//Assert
-		assertTrue(clientResponse != null);
+		assertNotNull(clientResponse);
 		assertEquals(clientRequest.getFirstName(), clientResponse.getFirstName());
+		verify(validator, times(1)).validateClientRequest(eq(clientRequest), isNull(), anyList(), eq("create"));
 		verify(clientRepository, times(1)).save(any(Client.class));
 		
 	}
@@ -174,8 +189,13 @@ public class ClientServiceImplTest {
 		ClientResponse response = clientServiceImpl.save(clientRequest);
 			
 		//Assert
-		assertNull(response, "Expected null when client repository save returns null");
-		verify(clientRepository, times(1)).save(any(Client.class));
+		assertNull(response);
+		
+		verify(validator, times(1))
+				.validateClientRequest(eq(clientRequest),isNull(), anyList(), eq("create"));
+		
+		verify(clientRepository, times(1))
+				.save(any(Client.class));
 		
 	}
 	
@@ -198,6 +218,12 @@ public class ClientServiceImplTest {
 		//Assert
 		
 		assertNotNull(result);
+		assertEquals(client.getFirstName(), result.getFirstName());
+		assertEquals(client.getLastName(), result.getLastName());
+		assertEquals(client.getAddress(), result.getAddress());
+		assertEquals(client.getPhone(), result.getPhone());
+		assertEquals(client.getEmail(), result.getEmail());
+		verify(clientRepository, times(1)).findById(id);
 		verify(clientRepository, times(1)).save(any(Client.class));
 
 	}
@@ -216,49 +242,8 @@ public class ClientServiceImplTest {
 		
 
 		assertTrue(exception.getMessage().contains("Client not found with id " + id));
-	}
-	
-	
+		
+		verify(clientRepository, times(1)).findById(id);
+		verify(clientRepository, never()).save(any());
+	}	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

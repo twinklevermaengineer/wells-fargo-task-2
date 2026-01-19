@@ -62,7 +62,7 @@ public class AdvisorServiceImpl implements AdvisorService {
 		// Map Request object to Entity Object
 		Advisor advisorEntity = new Advisor(null, advisorRequest.getFirstName()
 				,advisorRequest.getLastName(),advisorRequest.getAddress()
-				,advisorRequest.getPhoneNumber(),advisorRequest.getEmailAddress(), null);
+				,advisorRequest.getPhone(),advisorRequest.getEmail(), null);
 
 		
 		  Advisor saveAdvisor = advisorRepository.save(advisorEntity);
@@ -70,12 +70,13 @@ public class AdvisorServiceImpl implements AdvisorService {
 			 // Map Entity object to Response object
 			  AdvisorResponse advisorResponse = new AdvisorResponse(
 					  saveAdvisor.getAdvisorId(), saveAdvisor.getFirstName(),
-					  saveAdvisor.getLastName(),saveAdvisor.getEmail(),
-					  saveAdvisor.getPhone(),saveAdvisor.getAddress());
+					  saveAdvisor.getLastName(),saveAdvisor.getAddress(),
+					  saveAdvisor.getPhone(),saveAdvisor.getEmail());
 			  return advisorResponse;
 		  }
-		} catch(Exception excp) {
-			throw new ResourceCreationException("Advisor creation failed, request: " + advisorRequest.toString() + ",excp:" + excp.getMessage());
+		} catch(Exception excp) {	
+			throw new ResourceCreationException("Advisor creation failed, request: " +
+						advisorRequest.toString() + ",excp:" + excp.getMessage());
 		}
 		return null;
 	}
@@ -99,8 +100,8 @@ public class AdvisorServiceImpl implements AdvisorService {
 		advisor.setFirstName(advisorRequest.getFirstName());
 		advisor.setLastName(advisorRequest.getLastName());
 		advisor.setAddress(advisorRequest.getAddress());
-		advisor.setPhone(advisorRequest.getPhoneNumber());
-		advisor.setEmail(advisorRequest.getEmailAddress());
+		advisor.setPhone(advisorRequest.getPhone());
+		advisor.setEmail(advisorRequest.getEmail());
 		
 		advisorRepository.save(advisor);
 	}
@@ -137,9 +138,9 @@ public class AdvisorServiceImpl implements AdvisorService {
 					advisorFromDb.getAdvisorId(),
 					advisorFromDb.getFirstName(), 
 					advisorFromDb.getLastName(),
-					advisorFromDb.getEmail(),
+					advisorFromDb.getAddress(),
 					advisorFromDb.getPhone(),
-					advisorFromDb.getAddress());	
+					advisorFromDb.getEmail());	
 	}
 	
 }

@@ -14,7 +14,7 @@ import lombok.ToString;
 public class AdvisorRequest {
 	private String firstName;
 	private String lastName;
-	private String emailAddress;
-	private String phoneNumber;
 	private String address;
+	private String phone;
+	private String email;
 }
