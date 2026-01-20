@@ -35,60 +35,42 @@ public class ClientRequestValidator {
 		logger.info("Validating client request");
 		if(errors.size() > 0) {
 			logger.error("Basic validation failed for client request");
-			errors.add("Basic validation failed for client request");
 		}
-			List<Client> existingClientListUsingEmail = clientRepository
-					.findByEmail(clientRequest.getEmail());
-	
-			if(existingClientListUsingEmail.size() > 0) {				
-				if (action.equals("create")) {
-					logger.error("Client with similar email found");
-					errors.add("Client with similar email found");
-				} 
-				else if (action.equals("update")) {
-					for(Client clientFromDB: existingClientListUsingEmail) {
-						if(!Objects.equals(clientFromDB.getClientId(), inputClientId)) {
-							logger.error("Different client with similar email found");
-							errors.add("Different client with similar email found");
-						}
-					}
-				}
-			}
-			
-			List<Client> existingClientListUsingPhone = clientRepository
-					.findByPhone(clientRequest.getPhone());
-			
-			if(existingClientListUsingPhone.size() > 0) {
-
-				if(action.equals("create")) {
-					logger.error("Client with similar phone number found");
-					errors.add("Client with similar phone number found");
-				}else if(action.equals("update")){
-					 for(Client client: existingClientListUsingPhone) {
-						 if(!Objects.equals(client.getClientId(), inputClientId)) {
-							 logger.error("Different client with similar phone number found");
-							 errors.add("Different client with similar phone number found");
-					}
-				}
-			}
+		
+		String email = clientRequest.getEmail();
+		if (email != null && !email.isBlank()) {
+		    List<Client> existingClientListUsingEmail = clientRepository.findByEmail(email);
+		    if (!existingClientListUsingEmail.isEmpty()) {
+		        if ("create".equalsIgnoreCase(action)) {
+		            logger.warn("Client with similar email found");
+		            errors.add("Client with similar email found");
+		        } else if ("update".equalsIgnoreCase(action)) {
+		            for (Client clientFromDB : existingClientListUsingEmail) {
+		                if (!Objects.equals(clientFromDB.getClientId(), inputClientId)) {
+		                    logger.warn("Different client with similar email found");
+		                    errors.add("Different client with similar email found");
+		                }
+		            }
+		        }
+		    }
 		}
-
-			List<Client> existingClientListUsingAddress = clientRepository
-					.findByAddress(clientRequest.getAddress());
-			
-			if(existingClientListUsingAddress.size() > 0) {
-				
-				if(action.equals("create")) {
-					logger.error("Client with similar address found");
-					errors.add("Client with similar address found");
-				}else if(action.equals("update")) {
-				for(Client client: existingClientListUsingAddress) {
-					if(!Objects.equals(client.getClientId(), inputClientId)) {
-						logger.error("Different client with similar address found");
-						errors.add("Different client with similar address found");
-					}
-				}
-			}
+		
+		String phone = clientRequest.getPhone();
+		if (phone != null && !phone.isBlank()) {
+		    List<Client> existingClientListUsingPhone = clientRepository.findByPhone(phone);
+		    if (!existingClientListUsingPhone.isEmpty()) {
+		        if ("create".equalsIgnoreCase(action)) {
+		            logger.warn("Client with similar phone number found");
+		            errors.add("Client with similar phone number found");
+		        } else if ("update".equalsIgnoreCase(action)) {
+		            for (Client client : existingClientListUsingPhone) {
+		                if (!Objects.equals(client.getClientId(), inputClientId)) {
+		                    logger.warn("Different client with similar phone number found");
+		                    errors.add("Different client with similar phone number found");
+		                }
+		            }
+		        }
+		    }
 		}
 	}
 	
@@ -112,12 +94,12 @@ public class ClientRequestValidator {
 
 	protected void isFirstNameValid(String firstName, List<String> errors) {
 		if(firstName == null) {
-			logger.error("First name is null");
+			logger.error("First name cannot be null");
 			errors.add("First name cannot be null");	
 		}
 		else if(firstName.trim().length() > 100) {
-			logger.error("First name cannot exceed 100 characters");
-			errors.add("First name can have only 100 characters");
+			logger.error("First name cannot exceed 100 alpha characters");
+			errors.add("First name can have only 100 alpha characters");
 		}
 		else if(!firstName.matches("^[A-Za-z' -]+$")) {
 			logger.error("First name can have only alpha characters");
@@ -127,12 +109,12 @@ public class ClientRequestValidator {
 	
 	protected void isLastNameValid(String lastName, List<String> errors) {
 		if(lastName == null) {
-			logger.error("Last name is null");
+			logger.error("Last name cannot be null");
 			errors.add("Last name cannot be null");
 		}
 		else if(lastName.trim().length() > 100) {
-			logger.error("Last name cannot exceed 100 characters");
-			errors.add("Last name can only have 100 characters");
+			logger.error("Last name cannot exceed 100 alpha characters");
+			errors.add("Last name can only have 100  alpha characters");
 		}
 		else if(!lastName.matches("^[A-Za-z' -]+$")) {
 			logger.error("Last name can have only alpha characters");
@@ -158,8 +140,8 @@ public class ClientRequestValidator {
 			errors.add("Phone number cannot be null or blank");
 		}
 		else if(!phone.matches("\\d{10}")){
-			logger.error("Phone number can only have numeric numbers");
-			errors.add("Phone number can only have numeric numbers");
+			logger.error("Phone number can have only 10digit numeric numbers");
+			errors.add("Phone number can have only 10digit numeric numbers");
 		}
 	}
 	
@@ -168,36 +150,5 @@ public class ClientRequestValidator {
 			logger.error("Address cannot be null or blank");
 			errors.add("Address cannot be null or blank");
 		}
-	}
-	
-	
+	}	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

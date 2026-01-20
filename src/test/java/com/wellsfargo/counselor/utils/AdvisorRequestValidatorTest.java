@@ -1,23 +1,20 @@
 package com.wellsfargo.counselor.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
 import com.wellsfargo.counselor.repository.AdvisorRepository;
@@ -43,91 +40,116 @@ public class AdvisorRequestValidatorTest {
 		validRequest.setFirstName("Johnson");
 		validRequest.setLastName("Doe");
 		validRequest.setAddress("1234, newyork");
-		validRequest.setEmailAddress("doejohnson@gmail.com");
-		validRequest.setPhoneNumber("1234567890");
+		validRequest.setPhone("1234567890");
+		validRequest.setEmail("doejohnson@gmail.com");
 	}
-	
-	//Test for successfull validation during creation
+
 	@Test
-	void validateForCreate_success() {
-		//Mock repository to return empty list
+	void validateForCreate_returnEmptyList_success() {
+		
+		//Arrange
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
+		//Act
 		validator.validateAdvisorRequest(validRequest, null, errors);
 		
-		//Assert that no errors were found
-		assertTrue(errors.isEmpty());	
+		//Assert
+		assertThat(errors).isEmpty();
+		
+		verify(advisorRepository, times(1)).findByEmail(anyString());
+		verify(advisorRepository, times(1)).findByPhone(anyString());
+		verify(advisorRepository, times(1)).findByAddress(anyString());
 	}
-	
-	//Test for duplicate email during creation
+
 	@Test
-	void validateForCreate_duplicateEmail() {
-		//Mock repository to return one Advisor with same email
+	void validateForCreate_returnList_duplicateEmail() {
+		
+		//Arrange
 		when(advisorRepository.findByEmail(anyString())).thenReturn(List.of(new Advisor()));
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
+		//Act
 		validator.validateAdvisorRequest(validRequest, null, errors);
-		//Assert that error message for duplicate email is present
-		assertTrue(errors.contains("Advisor found with similar email"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Advisor found with similar email");
+		
+		verify(advisorRepository).findByEmail(validRequest.getEmail());
+		verify(advisorRepository).findByPhone(anyString());
+		verify(advisorRepository, times(1)).findByAddress(anyString());
 	}
-	
-	//Test for duplicate phone number during creation
+
 	@Test
-	void validateForCreate_duplicatePhone() {
-		//Mock repository to return one Advisor with same phone number
+	void validateForCreate_returnList_duplicatePhone() {
+		
+		//Arrange
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(List.of(new Advisor()));
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
+		
+		//Act
 		validator.validateAdvisorRequest(validRequest, null, errors);
 		
-		//Assert that error message for duplicate phone number is present
-		assertTrue(errors.contains("Advisor found with similar phone number"));
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Advisor found with similar phone number");
 		
+		verify(advisorRepository, times(1)).findByEmail(anyString());
+		verify(advisorRepository, times(1)).findByPhone(validRequest.getPhone());
+		verify(advisorRepository, times(1)).findByAddress(anyString());
 	}
 	
-	//Test for duplicate address during creation
 	@Test
-	void validateForCreate_duplicateAddress() {
+	void validateForCreate_returnList_duplicateAddress() {
+		
+		//Arrange
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.of(new Advisor()));
 		
+		//Act
 		validator.validateAdvisorRequest(validRequest, null, errors);
-		//Assert that error message for duplicate address is present
-		assertTrue(errors.contains("Advisor found with similar address"));
-	}
-	
-	//Test for successfull validation during update when no duplicates exists
-	@Test
-	void validateForUpdate_emptyList_success() {
-		Advisor existingAdvisor = new Advisor();
-		existingAdvisor.setFirstName("Abc");
-		existingAdvisor.setLastName("Xyz");
-		existingAdvisor.setEmail("abc@gmail.com");
-		existingAdvisor.setPhone("1234987659");
-		existingAdvisor.setAddress("1564, newyork");
 		
-		List<Advisor> advisorList = new ArrayList<>();
-		advisorList.add(existingAdvisor);
-	
-		//Mock repository to return no duplicates
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Advisor found with similar address");
+		
+		verify(advisorRepository).findByEmail(anyString());
+		verify(advisorRepository).findByPhone(anyString());
+		verify(advisorRepository).findByAddress(validRequest.getAddress());
+	}
+
+	@Test
+	void validateForUpdate_returnEmptyList_success() {
+		
+		//Arrange
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
+		
+		//Act
 		validator.validateForUpdate(validRequest, 1L, errors);
-		//Assert that no errors found
-		assertTrue(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isEmpty();
+		
+		verify(advisorRepository, times(1)).findByAddress(anyString());
+		verify(advisorRepository, times(1)).findByPhone(anyString());
+		verify(advisorRepository, times(1)).findByEmail(anyString());
 
 	}
-	
-	//Test for duplicate email during update
+
 	@Test
-	void validateForUpdate_emailAlreadyExists() {
+	void validateForUpdate_returnList_emailAlreadyExists() {
+		
+		//Arrange
 		Advisor existingAdvisor = new Advisor();
 		existingAdvisor.setEmail("johndoe@gmail.com");
+		existingAdvisor.setAdvisorId(2L);
 		
 		List<Advisor> existingAdvisorList = new ArrayList<>();
 		existingAdvisorList.add(existingAdvisor);
@@ -136,274 +158,373 @@ public class AdvisorRequestValidatorTest {
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
+		//Act
 		validator.validateForUpdate(validRequest, 1L, errors);
-		assertTrue(errors.contains("Duplicate email found"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Duplicate email found");
+		
+		verify(advisorRepository, times(1)).findByEmail(validRequest.getEmail());
+		verify(advisorRepository, times(1)).findByPhone(anyString());
+		verify(advisorRepository, times(1)).findByAddress(anyString());
 	}
 	
-	//Test for duplicate phone number during update
 	@Test
-	void validateForUpdate_phoneNumberAlreadyExists() {
+	void validateForUpdate_returnList_phoneNumberAlreadyExists() {
+		
+		//Arrange
 		Advisor existingAdvisor = new Advisor();
 		existingAdvisor.setPhone("1234567899");
+		existingAdvisor.setAdvisorId(2L);
 		
-		List<Advisor> existingAdvisorList = new ArrayList<>();
-		existingAdvisorList.add(existingAdvisor);
+		List<Advisor> existingAdvisorList = List.of(existingAdvisor);
 		
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(existingAdvisorList);
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 		
+		//Act
 		validator.validateForUpdate(validRequest, 1L, errors);
-		assertTrue(errors.contains("Duplicate phone number found"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Duplicate phone number found");
+		
+		verify(advisorRepository, times(1)).findByEmail(anyString());
+		verify(advisorRepository, times(1)).findByPhone(validRequest.getPhone());
+		verify(advisorRepository, times(1)).findByAddress(anyString());
 	}
-	
-	//Test for duplicate address during update
+
 	@Test
-	void validateForUpdate_addressAlreadyExists() {
+	void validateForUpdate_returnList_addressAlreadyExists() {
+		
+		//Arrange
 		Advisor existingAdvisor = new Advisor();
 		existingAdvisor.setAddress("456, NewYork");
-		
-		//List<Advisor> existingAdvisorList = new ArrayList<>();
-		//existingAdvisorList.add(existingAdvisor);
+		existingAdvisor.setAdvisorId(3L);
 		
 		when(advisorRepository.findByEmail(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByPhone(anyString())).thenReturn(Collections.emptyList());
 		when(advisorRepository.findByAddress(anyString())).thenReturn(Optional.of(existingAdvisor));
 		
+		//Act
 		validator.validateForUpdate(validRequest, 1L, errors);
-		assertTrue(errors.contains("Duplicate address found"));
+
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Duplicate address found");
+		
+		verify(advisorRepository, times(1)).findByEmail(anyString());
+		verify(advisorRepository, times(1)).findByPhone(anyString());
+		verify(advisorRepository, times(1)).findByAddress(validRequest.getAddress());
 	
 	}
 	
 	@Test
 	void basicValidationTest_success_errors_empty() {		
-		List<String> errors =new ArrayList<>();
+
+		//Act
 		validator.basicValidation(validRequest,errors);
-		assertTrue(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isEmpty();
 	}
 	
 	@Test
 	void basicValidationTest_fail_errors_notEmpty() {
-		List<String> errors = new ArrayList<>();
+		
+		//Arrange
 		AdvisorRequest inValidRequest = new AdvisorRequest();
 		inValidRequest.setFirstName("     ");
 		inValidRequest.setLastName("Doe");
-		inValidRequest.setEmailAddress(null);
-		inValidRequest.setPhoneNumber("1234567899");
+		inValidRequest.setEmail(null);
+		inValidRequest.setPhone("1234567899");
 		inValidRequest.setAddress("1355,NewYork");
+		
+		//Act
 		validator.basicValidation(inValidRequest, errors);
-		assertFalse(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("First name can have only alpha characters");
+		assertThat(errors).contains("Email cannot be null or blank");
 		
 	}
 
 	@Test
-	void emailValidationTest_success() {
+	void emailValidationTest_validInput_success() {
 		
+		//Arrange
 		String inputEmail = "abc@xyz.com";
-		List<String> errors = new ArrayList<>();	
 		
-		validator.isEmailValid(inputEmail, errors);		
-		assertEquals(errors.isEmpty(),true);
+		//Act
+		validator.isEmailValid(inputEmail, errors);	
+		
+		//Assert
+		assertThat(errors).isEmpty();
 	}
-	
+
 	@Test
-	void emailValidationTest_fail_blankValue() {
+	void emailValidationTest_blankValue_fail() {
 		
+		//Arrange
 		String inputEmail = " ";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isEmailValid(inputEmail, errors);
-		assertTrue(errors.contains("Email cannot be null or blank"));
-	}
-	
-	@Test
-	void emailValidationTest_fail_nullValue() {
 		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Email cannot be null or blank");
+	}
+
+	@Test
+	void emailValidationTest_nullValue_fail() {
+		
+		//Arrange
 		String inputEmail = null;
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isEmailValid(inputEmail, errors);
-		assertTrue(errors.contains("Email cannot be null or blank"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Email cannot be null or blank");
 	}
 	
 	@Test
-	void emailValidationTest_fail_patternMismatch() {
-		
+	void emailValidationTest_patternMismatch_fail() {
+
+		//Arrange
 		String inputEmailPattern = "InvalidEmail";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isEmailValid(inputEmailPattern, errors);
-		assertFalse(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Invalid email entered");
 	}	
 	
 	@Test
-	void firstNameValidationTest_success() {
+	void firstNameValidationTest_validInput_success() {
 		
+		//Arrange
 		String firstName = "John";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isFirstNameValid(firstName, errors);
-		assertTrue(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isEmpty();
 	}
 	
 	@Test
-	void firstNameValidationTest_fail_nullValue() {
+	void firstNameValidationTest_nullValue_fail() {
 		
+		//Arrange
 		String firstName = null;
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isFirstNameValid(firstName, errors);
-		assertTrue(errors.contains("First name cannot be null"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("First name cannot be null");
 	}
 	
 	@Test
-	void firstNameValidationTest_fail_patternMismatch() {
+	void firstNameValidationTest_patternMismatch_fail() {
 		
+		//Arrange
 		String firstNamePattern = "Name 123";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isFirstNameValid(firstNamePattern, errors);
-		assertEquals(errors.isEmpty(), false);
-		assertTrue(errors.contains("First name can have only alpha characters"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("First name can have only alpha characters");
 	}
 	
 	@Test
-	void firstNameValidationTest_fail_maxLength() {
+	void firstNameValidationTest_maxLength_fail() {
 		
+		//Arrange
 		String firstName = "erfw".repeat(101);
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isFirstNameValid(firstName, errors);
-		assertTrue(errors.contains("First name can have only 100 characters"));	
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("First name can have only 100 characters");	
 	}
 	
 	@Test
-	void lastNameValidationTest_success() {
+	void lastNameValidationTest_validInput_success() {
 		
+		//Arrange
 		String lastName = "Doe";
-		List<String> errors = new ArrayList<>();
-		
+
+		//Act
 		validator.isLastNameValid(lastName, errors);
-		assertTrue(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isEmpty();
 	}
 	
 	@Test
-	void lastNameValidationTest_fail_nullValue() {
+	void lastNameValidationTest_nullValue_fail() {
 		
+		//Arrange
 		String lastName = null;
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isLastNameValid(lastName, errors);
-		assertTrue(errors.contains("Last name cannot be null"));
+		
+		//Act
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Last name cannot be null");
 	}
 	
 	@Test
-	void lastNameValidationTest_fail_patternMismatch() {
+	void lastNameValidationTest_patternMismatch_fail() {
 		
+		//Arrange
 		String lastName = "Name123";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isLastNameValid(lastName, errors);
-		assertTrue(errors.contains("Last name can only have alpha characters"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Last name can only have alpha characters");
 	}
 	
 	@Test
-	void lastNameValidationTest_fail_maxLength() {
+	void lastNameValidationTest_maxLength_fail() {
 		
+		//Arrange
 		String lastName = "dew".repeat(101);
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isLastNameValid(lastName, errors);
-		assertTrue(errors.contains("Last name can only have 100 characters"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Last name can only have 100 characters");
 	}
 	
 	@Test
-	void phoneNumberValidationTest_suuccess() {
+	void phoneNumberValidationTest_validInput_success() {
 		
+		//Arrange
 		String phoneNumber = "1234567899";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isPhoneNumberValid(phoneNumber, errors);
-		assertTrue(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isEmpty();
 	}
 	
 	@Test
-	void phoneNumberValidationTest_fail_blankValue() {
+	void phoneNumberValidationTest_nullValue_fail() {
 		
-		String phoneNumber = " ";
-		List<String> errors = new ArrayList<>();
-		
-		validator.isPhoneNumberValid(phoneNumber, errors);
-		assertTrue(errors.contains("Phone number cannot be null or blank"));
-	}
-	
-	@Test
-	void phoneNumberValidationTest_fail_nullValue() {
-		
+		//Arrange
 		String phoneNumber = null;
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isPhoneNumberValid(phoneNumber, errors);
-		assertTrue(errors.contains("Phone number cannot be null or blank"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Phone number cannot be null or blank");
 	}
 	
 	@Test
-	void addressValidationTest_success() {
+	void phoneNumberValidationTest_blankValue_fail() {
+
+		//Arrange
+		String phoneNumber = " ";
+
+		//Act
+		validator.isPhoneNumberValid(phoneNumber, errors);
 		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Phone number cannot be null or blank");
+	}
+	
+	@Test
+	void phoneNumberValidationTest_patternMismatch_fail() {
+	
+	//Arrange
+	String phone = "Phone123";
+	
+	//Act
+	validator.isPhoneNumberValid(phone, errors);
+	
+	//Assert
+	assertThat(errors).isNotEmpty();
+	assertThat(errors).contains("Phone number can have only 10digit numeric numbers");
+	}
+	
+	@Test
+	void phoneNumberValidationTest_exceedsLength_fail() {
+		
+	//Arrange
+	String phone = "894578996789";
+	
+	//Act
+	validator.isPhoneNumberValid(phone, errors);
+	
+	//Assert
+	assertThat(errors).isNotEmpty();
+	assertThat(errors).contains("Phone number can have only 10digit numeric numbers");
+		
+	}
+	
+	@Test
+	void addressValidationTest_validInput_success() {
+		
+		//Arrange
 		String address = "1234, newyork";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isAddressValid(address, errors);
-		assertTrue(errors.isEmpty());
+		
+		//Assert
+		assertThat(errors).isEmpty();
 	}
 	
 	@Test
-	void addressValidationTest_fail_nullValue() {
+	void addressValidationTest_nullValue_fail() {
 		
+		//Arrange
 		String address = null;
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isAddressValid(address, errors);
-		assertTrue(errors.contains("Address cannot be null or blank"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Address cannot be null or blank");
 	}
 	
 	@Test
-	void addressValidationTest_fail_blankValue() {
+	void addressValidationTest_blankValue_fail() {
 		
+		//Arrange
 		String address = " ";
-		List<String> errors = new ArrayList<>();
 		
+		//Act
 		validator.isAddressValid(address, errors);
-		assertTrue(errors.contains("Address cannot be null or blank"));
+		
+		//Assert
+		assertThat(errors).isNotEmpty();
+		assertThat(errors).contains("Address cannot be null or blank");
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

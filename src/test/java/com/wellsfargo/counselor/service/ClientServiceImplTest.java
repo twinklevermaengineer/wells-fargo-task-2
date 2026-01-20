@@ -1,6 +1,7 @@
 package com.wellsfargo.counselor.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -67,7 +68,7 @@ public class ClientServiceImplTest {
 		
 		//Assert
 		assertNotNull(result);
-		verify(clientRepository).findById(id);
+		verify(clientRepository, times(1)).findById(id);
 	}
 	
 	@Test
@@ -82,7 +83,7 @@ public class ClientServiceImplTest {
 		//Assert
 
 		assertNull(response);
-		verify(clientRepository).findById(id);
+		verify(clientRepository, times(1)).findById(id);
 
 	}
 	
@@ -100,7 +101,7 @@ public class ClientServiceImplTest {
 		//Assert
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		verify(clientRepository).findByAddress(address);
+		verify(clientRepository, times(1)).findByAddress(address);
 	}
 	
 	@Test
@@ -123,8 +124,7 @@ public class ClientServiceImplTest {
 	void findAll_whenClientFound_returnClientList_success() {
 		//Arrange
 		client = new Client("John", "Richard", "johnrichard@gmail.com", "9594565214", "568, Tampa Fl");
-		List<Client> clientList = new ArrayList<>();
-		clientList.add(client);
+
 		when(clientRepository.findAll()).thenReturn(List.of(client));
 		
 		//Act
@@ -132,9 +132,11 @@ public class ClientServiceImplTest {
 		
 		//Assert
 		assertNotNull(result);
-		assertTrue(!result.isEmpty());
+		assertFalse(result.isEmpty());
 		assertEquals(1, result.size());
+		
 		ClientResponse response = result.get(0);
+
 		assertEquals(client.getClientId(), response.getClientId());
 		assertEquals(client.getFirstName(), response.getFirstName());
 		assertEquals(client.getLastName(), response.getLastName());
@@ -158,14 +160,16 @@ public class ClientServiceImplTest {
 		assertTrue(result.isEmpty());
 		verify(clientRepository).findAll();
 	}
-	
+
 	@Test
 	void save_whenClientSaved_success() {
 		//Arrange
 		client = new Client(
 			clientRequest.getFirstName(), clientRequest.getLastName(),
-			clientRequest.getEmail(), clientRequest.getPhone(),
-			clientRequest.getAddress());
+			clientRequest.getAddress(),clientRequest.getPhone(),
+			clientRequest.getEmail());
+			
+		
 		when(clientRepository.save(any(Client.class))).thenReturn(client);
 		
 		//Act
@@ -174,9 +178,12 @@ public class ClientServiceImplTest {
 		//Assert
 		assertNotNull(clientResponse);
 		assertEquals(clientRequest.getFirstName(), clientResponse.getFirstName());
+		assertEquals(clientRequest.getLastName(), clientResponse.getLastName());
+		assertEquals(clientRequest.getAddress(), clientResponse.getAddress());
+		assertEquals(clientRequest.getPhone(), clientResponse.getPhone());
+		assertEquals(clientRequest.getEmail(), clientResponse.getEmail());
 		verify(validator, times(1)).validateClientRequest(eq(clientRequest), isNull(), anyList(), eq("create"));
-		verify(clientRepository, times(1)).save(any(Client.class));
-		
+		verify(clientRepository, times(1)).save(any(Client.class));	
 	}
 	
 	@Test
@@ -195,7 +202,7 @@ public class ClientServiceImplTest {
 				.validateClientRequest(eq(clientRequest),isNull(), anyList(), eq("create"));
 		
 		verify(clientRepository, times(1))
-				.save(any(Client.class));
+				.save(any());
 		
 	}
 	
@@ -227,7 +234,7 @@ public class ClientServiceImplTest {
 		verify(clientRepository, times(1)).save(any(Client.class));
 
 	}
-	
+
 	@Test
 	void updateClient_whenNotUpdated_fail() {
 		//Arrange

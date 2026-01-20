@@ -98,7 +98,7 @@ public class AdvisorServiceImplTest {
 
 	@Test
 	void saveAdvisor_whenAdvisorSaved_success() {
-		
+
 		//Arrange
 		Long id = 1L;
 		Advisor advisorEntity = new Advisor(
@@ -151,9 +151,8 @@ public class AdvisorServiceImplTest {
 	assertEquals(advisor.getAddress(), response.getAddress());
 	assertEquals(advisor.getPhone(), response.getPhone());
 	assertEquals(advisor.getEmail(), response.getEmail());
-	verify(advisorRepository).findAll();
-		
-	}
+	verify(advisorRepository).findAll();	
+   }
 	
 	@Test
 	void findAll_whenNoAdvisorFound_fail() {

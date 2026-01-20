@@ -169,8 +169,8 @@ public class AdvisorRequestValidator {
 			errors.add("Phone number cannot be null or blank");
 		}
 		else if (!phone.matches("\\d{10}")) {
-		   logger.error("Phone number can have only 10 digits");
-		   errors.add("Phone number can have only 10 digits");
+		   logger.error("Phone number can have only 10digit numeric numbers");
+		   errors.add("Phone number can have only 10digit numeric numbers");
 	   }
 	 }
 	
