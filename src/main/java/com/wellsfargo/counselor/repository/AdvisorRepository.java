@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.wellsfargo.counselor.entity.Advisor;
+import com.wellsfargo.counselor.entity.Client;
 
 @Repository
 public interface AdvisorRepository extends JpaRepository<Advisor, Long> {
@@ -23,5 +24,6 @@ public interface AdvisorRepository extends JpaRepository<Advisor, Long> {
 	
 	Optional<Advisor> findByAddress(String address);
 
+	Optional<Advisor> findByClients_ClientId(Long clientId);
 
 }

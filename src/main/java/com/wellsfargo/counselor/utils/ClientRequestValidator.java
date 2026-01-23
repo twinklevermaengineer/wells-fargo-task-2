@@ -14,8 +14,9 @@ import com.wellsfargo.counselor.repository.ClientRepository;
 @Component
 public class ClientRequestValidator {
 	
-	
-	private static final Logger logger = LoggerFactory.getLogger(ClientRequestValidator.class);
+	private static final Logger logger =
+			LoggerFactory.getLogger(ClientRequestValidator.class);
+
 	final Pattern EMAIL_PATTERN = Pattern.compile(
 			"^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +
 		    "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");

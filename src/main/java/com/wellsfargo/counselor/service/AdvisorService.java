@@ -17,4 +17,5 @@ public interface AdvisorService {
 
 	AdvisorResponse findByAddress(String address);
 
+	AdvisorResponse findAdvisorByClientId(Long clientId);
 }

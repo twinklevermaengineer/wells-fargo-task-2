@@ -1,5 +1,7 @@
 package com.wellsfargo.counselor.model.request;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientRequest {
-	
-	private Long clientId;
-	private String firstName;
-	private String lastName;
-	private String address;
-	private String phone;
-	private String email;
-	
-	
-	
+public class SecurityRequest {
+
+	private String name;
+	private String category;
+	private BigDecimal purchasePrice;
+	private String purchaseDate;
+	private Integer quantity;
 }

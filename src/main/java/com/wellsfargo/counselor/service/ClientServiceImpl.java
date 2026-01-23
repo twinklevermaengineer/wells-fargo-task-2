@@ -32,12 +32,16 @@ public class ClientServiceImpl implements ClientService{
 
 	@Override
 	public ClientResponse findById(Long id) {
-		logger.info("Find client with id: " + id);
-		Optional<Client> clientFromDb = clientRepository.findById(id);
 		
+		logger.info("Find client with id: " + id);
+		
+		Optional<Client> clientFromDb = clientRepository.findById(id);
+
 		if(clientFromDb.isPresent()) {
 			logger.info("Client found with id {} ", id);
+			
 			Client client = clientFromDb.get();
+	
 			ClientResponse clientResponse = new ClientResponse(
 					id, client.getFirstName(), client.getLastName(),client.getAddress(),
 					client.getPhone(),client.getEmail());
@@ -56,11 +60,13 @@ public class ClientServiceImpl implements ClientService{
 		
 			for(Client clientEntity: client) {
 			clientList.add(new ClientResponse(
-					clientEntity.getClientId(), clientEntity.getFirstName(),
-					clientEntity.getLastName(), clientEntity.getAddress(),
-					clientEntity.getPhone(), clientEntity.getEmail()));
-		
-		}
+					clientEntity.getClientId(),
+					clientEntity.getFirstName(),
+					clientEntity.getLastName(),
+					clientEntity.getAddress(),
+					clientEntity.getPhone(),
+					clientEntity.getEmail()));
+				}
 		}catch(Exception e) {
 			throw new ResourceNotFoundException("Client not found with similar address " + address);
 		}
@@ -88,8 +94,11 @@ public class ClientServiceImpl implements ClientService{
 	@Override
 	@Transactional
 	public ClientResponse save(ClientRequest clientRequest) {
+		
 		List<String> errors = new ArrayList<>();
+		
 		validator.validateClientRequest(clientRequest, null, errors, "create");
+		
 		if(!errors.isEmpty()) {
 			errors.add("Invalid client request");
 			throw new InvalidRequestException("Invalid client request");
@@ -101,13 +110,17 @@ public class ClientServiceImpl implements ClientService{
 				clientRequest.getPhone(), clientRequest.getEmail());
 		
 		Client saveClient = clientRepository.save(client);
-		if(saveClient != null) {
-		ClientResponse response = new ClientResponse(
-				saveClient.getClientId(), saveClient.getFirstName(),
-				saveClient.getLastName(), saveClient.getAddress(),
-				saveClient.getPhone(), saveClient.getEmail());
-		return response;
 		
+		if(saveClient != null) {
+		
+			ClientResponse response = new ClientResponse(
+				saveClient.getClientId(),
+				saveClient.getFirstName(),
+				saveClient.getLastName(),
+				saveClient.getAddress(),
+				saveClient.getPhone(),
+				saveClient.getEmail());
+		return response;
 	}
 		} catch(Exception e){
 			throw new ResourceCreationException("Client creation failed, request: " +
@@ -121,8 +134,11 @@ public class ClientServiceImpl implements ClientService{
 	@Override
 	@Transactional
 	public Client updateClient(Long id, ClientRequest clientRequest) {
+		
 		List<String> errors = new ArrayList<>();
+		
 		validator.validateClientRequest(clientRequest, id, errors, "update");
+		
 		if(!errors.isEmpty()) {
 			logger.error("Invalid client request");
 			throw new InvalidRequestException(
@@ -141,7 +157,32 @@ public class ClientServiceImpl implements ClientService{
 		
 		return clientRepository.save(client);
 	}
-}
+
+	@Override
+	public List<ClientResponse> findClientByAdvisorId(Long advisorId) {
+		
+		List<ClientResponse> clientResponse = new ArrayList<>();
+		try {
+		List<Client> client = clientRepository.findByAdvisor_AdvisorId(advisorId);
+		
+		for(Client clientEntity: client) {
+			clientResponse.add(new ClientResponse(
+					clientEntity.getClientId(),
+					clientEntity.getFirstName(),
+					clientEntity.getLastName(),
+					clientEntity.getEmail(),
+					clientEntity.getPhone(),
+					clientEntity.getAddress()
+					));
+		}
+		}catch(Exception e) {
+			throw new ResourceNotFoundException("Client not found with advisorId: " + advisorId + " " + e.getMessage());
+		}
+		return clientResponse;
+		
+		}
+
+	}
 
 
 

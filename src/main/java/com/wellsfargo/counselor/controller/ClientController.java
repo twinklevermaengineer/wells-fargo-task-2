@@ -32,7 +32,7 @@ public class ClientController {
 		this.clientService = clientService;
 	}
 	
-	@GetMapping("/")
+	@GetMapping
 	public ResponseEntity<List<ClientResponse>> clientByAddress(@RequestParam(required = false) String address){
 		if(address != null) {
 			logger.info("Fetching client by address {} ", address);
@@ -70,7 +70,19 @@ public class ClientController {
 			throw new ResourceNotFoundException("Client not found with id: " + id);	
 	}
 	
-	@PostMapping("/")
+	@GetMapping("/{advisorId}/clients")
+	public ResponseEntity<List<ClientResponse>> getClientByAdvisorId(@PathVariable Long advisorId){
+		
+		List<ClientResponse> client = clientService.findClientByAdvisorId(advisorId);
+		
+		if(client != null) {
+			return ResponseEntity.ok(client);
+		}
+		return ResponseEntity.noContent().build();
+		
+	}
+	
+	@PostMapping
 	public ResponseEntity<ClientResponse> addClient(@RequestBody ClientRequest clientRequest){
 		logger.info("Recieved new client request {} ", clientRequest.toString());
 		
@@ -79,7 +91,7 @@ public class ClientController {
 		return ResponseEntity.ok(response);
 		
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<ClientResponse> updateClient(
 			@PathVariable Long id,
@@ -96,40 +108,5 @@ public class ClientController {
 
 				return ResponseEntity.ok(clientUpdate);
 	}
-}
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

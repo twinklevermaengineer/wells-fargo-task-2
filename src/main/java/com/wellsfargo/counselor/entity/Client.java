@@ -50,7 +50,6 @@ public class Client {
 	
 	@ManyToOne
 	@JoinColumn(name="advisor_id", nullable = true)
-	// @JsonManagedReference // tells Jackson: serialize this side
 	private Advisor advisor;
 
 	public Client(String firstName, String lastName, String address,

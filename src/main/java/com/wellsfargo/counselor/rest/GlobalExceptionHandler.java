@@ -44,7 +44,7 @@ public ResponseEntity<CustomErrorResponse>handleInvalidRequest(InvalidRequestExc
 
 @ExceptionHandler(ServerException.class)
 public ResponseEntity<CustomErrorResponse>handleServerException(ServerException e){
-	logger.warn("Server exception occured: {} ", e.getMessage());
+	logger.warn("Server exception occured: {} ", e.getMessage(), e);
 	CustomErrorResponse error = new CustomErrorResponse();
 	error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	error.setMessage(e.getMessage());
@@ -59,6 +59,6 @@ public ResponseEntity<CustomErrorResponse>handleExceptions(Exception e){
 	CustomErrorResponse error = new CustomErrorResponse();
 	error.setStatus(HttpStatus.BAD_REQUEST.value());
 	error.setMessage("An unexpected error occured " + e.getMessage());
-	return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+	return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
  }
 }

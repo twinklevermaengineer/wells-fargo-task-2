@@ -1,5 +1,6 @@
 package com.wellsfargo.counselor.model.request;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientRequest {
-	
-	private Long clientId;
-	private String firstName;
-	private String lastName;
-	private String address;
-	private String phone;
-	private String email;
-	
-	
-	
+public class PortfolioRequest {
+
+	private String creationDate;
+	private List<SecurityRequest> securities;
+	private ClientRequest client;
 }

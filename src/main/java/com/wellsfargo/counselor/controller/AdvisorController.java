@@ -5,7 +5,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,19 +31,23 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 	
 	@GetMapping("/")
 	public ResponseEntity<List<AdvisorResponse>> getAdvisor(@RequestParam(required = false) String address) {
-		if (address !=null) {
-			logger.info("Fetching advisor with address {} " , address);
+		
+			if(address !=null) {
+				logger.info("Fetching advisor, address {} " , address);
+			
 			AdvisorResponse advisor = advisorService.findByAddress(address);
-			if(advisor != null) {
-				logger.info("Advisor found with address {}", address);
+				
+				if(advisor != null) {
+					logger.info("Advisor found, address {}", address);
+				
 				List<AdvisorResponse> advisors = new ArrayList<>();
-				advisors.add(advisor);
+					advisors.add(advisor);
 				return ResponseEntity.ok(advisors);
 			}
-				logger.error("Advisor not found with address {} " , address);
-			throw new ResourceNotFoundException("Advisor not found with address " + address);
+					logger.error("Advisor not found with address {} " , address);
+				throw new ResourceNotFoundException("Advisor not found with address " + address);
 		} else {
-			logger.info("Fetching all the advisors");
+				logger.info("Fetching all the advisors");
 			List<AdvisorResponse> advisor = advisorService.findAll();
 			if(advisor.isEmpty()) {
 				logger.error("Advisors not found");
@@ -54,20 +57,20 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 			return ResponseEntity.ok(advisor);	
 		}
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<AdvisorResponse> getAdvisorById(@PathVariable Long id) {
-	logger.info("Fetching advisor b id: {} ", id);	
+	logger.info("Fetching advisor, id: {} ", id);	
 	AdvisorResponse advisor =	advisorService.findById(id);
 		if(advisor != null) {
-			logger.info("Found advisor with id {}" , advisor);
+			logger.info("Found advisor, id {}" , advisor);
 			return ResponseEntity.ok(advisor);
 		}else {
-			logger.error("Advisor not found with id {} ", id);
-		throw new ResourceNotFoundException("Advisor not found " + id);
+			logger.error("Advisor not found, id {} ", id);
+		throw new ResourceNotFoundException("Advisor not found, id: " + id);
 		}
 	}
-	
+
 	@PostMapping("/")
 	public ResponseEntity<AdvisorResponse> addAdvisor(@RequestBody AdvisorRequest advisor) {
 		
@@ -77,23 +80,38 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 		logger.info("Advisor created successfully, advisor id {}", advisorResponse);
 		return ResponseEntity.ok(advisorResponse);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteAdvisor(@PathVariable Long id) {
-		logger.warn("Deleting advisor with id {} ", id);
+		
+		logger.warn("Deleting advisor, id: {} ", id);
+		
 		advisorService.deleteById(id);
-		return ResponseEntity.ok("Advisor deleted successfully");
-	
+		
+		return ResponseEntity.noContent().build();
+
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<String> updateAdvisor(
 			@PathVariable Long id, 
 			@RequestBody AdvisorRequest advisorRequest){
-		
+		logger.info("Fetching advisor id for update request {} ", id);
 		advisorService.updateAdvisor(id, advisorRequest);
 		
-		return ResponseEntity.ok("Advisor updated successfully for id " + id);	
+		return ResponseEntity.ok("Advisor updated successfully for id: " + id);	
 	}
-
+	
+	@GetMapping("/{clientId}/advisor")
+	public ResponseEntity<AdvisorResponse> getAdvisorByClientId(@PathVariable Long clientId){
+		logger.info("Fetching advisor by client id, clientId {} ", clientId);
+		AdvisorResponse response = advisorService.findAdvisorByClientId(clientId);
+		
+			if(response != null) {
+				logger.info("Advisor found associated to client id {} ", clientId);
+				return ResponseEntity.ok(response);
+			}
+		logger.error("Advisor not found associated to clientId: {} ", clientId);
+		return ResponseEntity.noContent().build();	
+	}
 }

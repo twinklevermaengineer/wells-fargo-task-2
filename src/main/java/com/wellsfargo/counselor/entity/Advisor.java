@@ -53,7 +53,6 @@ public class Advisor {
     private String email;
   
     @OneToMany(mappedBy = "advisor")
-   // @JsonBackReference // tells Jackson: ignore this side to prevent recursion
     private List<Client> clients = new ArrayList<>();
 
 }
