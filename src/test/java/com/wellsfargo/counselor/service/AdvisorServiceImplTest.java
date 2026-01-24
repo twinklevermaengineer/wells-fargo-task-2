@@ -1,5 +1,6 @@
 package com.wellsfargo.counselor.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,6 +27,7 @@ import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
 import com.wellsfargo.counselor.model.request.AdvisorResponse;
 import com.wellsfargo.counselor.repository.AdvisorRepository;
+import com.wellsfargo.counselor.rest.ResourceCreationException;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.AdvisorRequestValidator;
 
@@ -53,9 +55,8 @@ public class AdvisorServiceImplTest {
 	advisorRequest.setAddress("1355, Texas");
 	advisorRequest.setPhone("1234567895");
 	advisorRequest.setEmail("pauldoe@gmail.com");
-	
 	}
-	
+
 	@Test
 	void findById_whenAdvisorFoundWithId_success(){
 
@@ -68,15 +69,16 @@ public class AdvisorServiceImplTest {
 		
 		// Act
 		AdvisorResponse result = advisorServiceImpl.findById(id); 
-		
+
 		// Assert
-		assertNotNull(result);
+		assertThat(result).isNotNull();
 		assertEquals(advisor.getAdvisorId(), result.getAdvisorId());
 		assertEquals(advisor.getFirstName(), result.getFirstName());
 		assertEquals(advisor.getLastName(), result.getLastName());
 		assertEquals(advisor.getAddress(), result.getAddress());
 		assertEquals(advisor.getPhone(), result.getPhone());
 		assertEquals(advisor.getEmail(), result.getEmail());
+		
 		verify(advisorRepository, times(1)).findById(id);
 	}
 
@@ -89,10 +91,12 @@ public class AdvisorServiceImplTest {
 
 	    // Act & Assert
 	   ResourceNotFoundException exception =
-			   assertThrows(ResourceNotFoundException.class,
-					  () -> {advisorServiceImpl.findById(id);
+			   assertThrows(ResourceNotFoundException.class, () -> {
+				   			advisorServiceImpl.findById(id);
 					  	});
-	   assertTrue(exception.getMessage().contains("Advisor not found with id " + id));
+	   
+	   assertThat(exception.getMessage().contains("Advisor not found with id " + id));
+	   
 	   verify(advisorRepository).findById(id);
 	}	
 
@@ -105,13 +109,14 @@ public class AdvisorServiceImplTest {
 				id,advisorRequest.getFirstName(),advisorRequest.getLastName(),
 				 advisorRequest.getAddress(), advisorRequest.getPhone(),
 				 advisorRequest.getEmail(), null);
+		
 		when(advisorRepository.save(any(Advisor.class))).thenReturn(advisorEntity);
 
 		///Act
        AdvisorResponse response = advisorServiceImpl.save(advisorRequest);
 
 		//Assert
-        assertNotNull(response);
+        assertThat(response).isNotNull();
         assertEquals(advisorRequest.getFirstName(), response.getFirstName());
         assertEquals(advisorRequest.getLastName(), response.getLastName());
         assertEquals(advisorRequest.getAddress(), response.getAddress());
@@ -123,6 +128,27 @@ public class AdvisorServiceImplTest {
         
         verify(advisorRepository, times(1))
         	.save(any(Advisor.class));
+	}
+
+	@Test
+	void saveAdvisor_whenAdvisorNotSaved_fail() {
+		//Arrange
+		when(advisorRepository.save(any(Advisor.class))).thenReturn(null);
+		
+		//Act and Assert
+		
+		ResourceCreationException exception = assertThrows( 
+					ResourceCreationException.class, () -> {
+						advisorServiceImpl.save(advisorRequest);
+			});
+		//Assert
+		assertThat(exception).isNotNull();
+		
+		verify(validator, times(1))
+     		.validateAdvisorRequest(eq(advisorRequest), isNull(), anyList());
+     
+		verify(advisorRepository, times(1))
+     		.save(any(Advisor.class));
 	}
 
 	@Test
@@ -141,7 +167,7 @@ public class AdvisorServiceImplTest {
 	List<AdvisorResponse> result = advisorServiceImpl.findAll();
 
 	//Assert
-	assertFalse(result.isEmpty());
+	assertThat(result).isNotEmpty();
 	assertEquals(1, result.size());
 	
 	AdvisorResponse response = result.get(0);
@@ -163,9 +189,8 @@ public class AdvisorServiceImplTest {
 		List<AdvisorResponse> result = advisorServiceImpl.findAll();
 		
 		//Assert
-		assertTrue(result.isEmpty());
+		assertThat(result).isEmpty();
 		verify(advisorRepository).findAll();
-		
 	}
 
 	@Test
@@ -209,11 +234,57 @@ public class AdvisorServiceImplTest {
 					advisorServiceImpl.updateAdvisor(id, advisorRequest);
 				});
 		
-		assertTrue(exception.getMessage()
+		assertThat(exception.getMessage()
 					.contains("Advisor not found with id " + id));
 		
 		verify(advisorRepository, times(1)).findById(id);
 		verify(advisorRepository, never()).save(any());
-		
 	}	
-}	
+	
+	@Test
+	void findAdvisorByClientId_advisorFound_success() {
+		
+		//Arrange
+		Long clientId = 4L;
+		
+		Advisor advisor = new Advisor();
+		advisor.setAdvisorId(1L);
+		advisor.setFirstName("John");
+		advisor.setLastName("Doe");
+		advisor.setAddress("546, Miami Fl");
+		advisor.setPhone("9856478532");
+		advisor.setEmail("johndoe@gmail.com");
+		
+		when(advisorRepository.findByClients_ClientId(clientId)).thenReturn(Optional.of(advisor));
+		
+		//Act
+		AdvisorResponse response = advisorServiceImpl.findAdvisorByClientId(clientId);
+		
+		//Assert
+		assertThat(response).isNotNull();
+		
+		verify(advisorRepository, times(1)).findByClients_ClientId(clientId);
+	}
+
+	@Test
+	void findAdvisorByClientId_advisorNotFound_fail() {
+		
+		//Arrange
+		Long clientId = 5L;
+		
+		when(advisorRepository.findByClients_ClientId(clientId)).thenReturn(Optional.empty());
+		
+		//Act and Assert
+		ResourceNotFoundException exception = assertThrows(
+						ResourceNotFoundException.class, () -> {
+							advisorServiceImpl.findAdvisorByClientId(clientId);
+						});
+		
+		//Assert
+		assertThat(exception).isNotNull();
+		
+		verify(advisorRepository, times(1)).findByClients_ClientId(clientId);
+	}
+	
+	
+}

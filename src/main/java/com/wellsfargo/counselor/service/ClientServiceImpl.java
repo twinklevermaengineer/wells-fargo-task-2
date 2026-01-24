@@ -170,9 +170,10 @@ public class ClientServiceImpl implements ClientService{
 					clientEntity.getClientId(),
 					clientEntity.getFirstName(),
 					clientEntity.getLastName(),
-					clientEntity.getEmail(),
+					clientEntity.getAddress(),
 					clientEntity.getPhone(),
-					clientEntity.getAddress()
+					clientEntity.getEmail()
+					
 					));
 		}
 		}catch(Exception e) {
@@ -181,23 +182,4 @@ public class ClientServiceImpl implements ClientService{
 		return clientResponse;
 		
 		}
-
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

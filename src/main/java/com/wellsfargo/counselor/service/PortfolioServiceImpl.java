@@ -49,8 +49,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 	 logger.warn("Portfolio not found, id: {}", id);
                      return new ResourceNotFoundException("Portfolio not found, id: " + id);
                 });
-        
-        
+
         Client clientEntity = portfolioEntity.getClient();
         
         logger.info("Mapping client entity object to client response object, id: {} ", id);
@@ -149,7 +148,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 		Client clientEntity = clientRepository.findById(clientId)
 					.orElseThrow(() -> 
 							new ResourceNotFoundException("Client not found"));
-		
+
 		portfolioEntity.setClient(clientEntity);
 		
 		portfolioEntity.setCreationDate(
@@ -159,6 +158,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 			);
 
 		List<SecurityRequest> securityRequestList = portfolioRequest.getSecurities();
+		
 		if(CollectionUtils.isEmpty(securityRequestList)) {
 			securityRequestList = new ArrayList<>();
 		}

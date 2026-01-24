@@ -27,14 +27,14 @@ public class PortfolioRequestValidator {
 			logger.error(message);
 			throw new InvalidRequestException(message);
 		}
-	
+
 		ClientRequest client = portfolioRequest.getClient();
 		if (client == null) {
 			String message = "Empty client found";
-			logger.error("{} - {}", message, client);
+			logger.error(message);
 			throw new InvalidRequestException(message);
 		}
-		
+
 		Long clientId = client.getClientId();
 		if(clientId == null) {
 			String message = "Invalid client id";
@@ -45,9 +45,7 @@ public class PortfolioRequestValidator {
 			 String message = "Client not found with id";
 			 logger.error("{} - {}", message, clientId);
 	         throw new InvalidRequestException(message + " : " + clientId);
-	        
+
 		 }
-				
 	}
-	
 }
