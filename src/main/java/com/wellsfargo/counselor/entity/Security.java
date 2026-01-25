@@ -1,8 +1,13 @@
 package com.wellsfargo.counselor.entity;
 
 import java.math.BigDecimal;
+
+import com.wellsfargo.counselor.utils.SecurityType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,15 +38,18 @@ public class Security {
 	@Column(name = "name",nullable = false)
 	private String name;
 	
-	@NotBlank
-	@Column(name = "category",nullable = false)
-	private String category;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "category", nullable = false)
+	private SecurityType category;
 	
 	@NotNull
 	@Column(name = "purchase_price",nullable = false)
 	private BigDecimal purchasePrice;
-	
-	//I want to explicitly declare it as String instead of LocalDate so I can handle type conversion
+	/*
+	 * Declare it as String instead of LocalDate,
+	 * To handle type conversion later
+	 */
 	@NotBlank
 	@Column(name = "purchase_date",nullable = false)
 	private String purchaseDate;

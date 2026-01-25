@@ -136,7 +136,7 @@ public class AdvisorRequestValidator {
 			logger.error("First name exceeds max length");
 			errors.add("First name can have only 100 characters");
 		}		
-		else if (!firstName.matches("^[A-Za-z]+$")) {
+		else if (!firstName.matches("^[\\p{L}' .-]+$")) {
 			logger.error("First name can have only alpha characters");
 			errors.add("First name can have only alpha characters");
 		}
@@ -150,7 +150,7 @@ public class AdvisorRequestValidator {
 			logger.error("Last name exceeds max length");
 			errors.add("Last name can only have 100 characters");
 		}
-		else if (!lastName.matches("^[A-Za-z]+$")) {
+		else if (!lastName.matches("^[\\p{L}' .-]+$")) {
 			logger.error("Last name can only have alpha characters");
 			errors.add("Last name can only have alpha characters");
 		}

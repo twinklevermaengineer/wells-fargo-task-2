@@ -102,7 +102,7 @@ public class ClientRequestValidator {
 			logger.error("First name cannot exceed 100 alpha characters");
 			errors.add("First name can have only 100 alpha characters");
 		}
-		else if(!firstName.matches("^[A-Za-z' -]+$")) {
+		else if(!firstName.matches("^[\\p{L}' .-]+$")) {
 			logger.error("First name can have only alpha characters");
 			errors.add("First name can have only alpha characters");
 		}
@@ -117,12 +117,12 @@ public class ClientRequestValidator {
 			logger.error("Last name cannot exceed 100 alpha characters");
 			errors.add("Last name can only have 100  alpha characters");
 		}
-		else if(!lastName.matches("^[A-Za-z' -]+$")) {
+		else if(!lastName.matches("^[\\p{L}' .-]+$")) {
 			logger.error("Last name can have only alpha characters");
 			errors.add("Last name can have only alpha characters");
 		}
 	}
-	
+
 	protected void isEmailValid(String email, List<String> errors) {
 		
 		if(email == null || email.isBlank()) {
@@ -145,7 +145,7 @@ public class ClientRequestValidator {
 			errors.add("Phone number can have only 10digit numeric numbers");
 		}
 	}
-	
+
 	protected void isAddressValid(String address, List<String> errors) {
 		if(address == null || address.isBlank()) {
 			logger.error("Address cannot be null or blank");

@@ -148,7 +148,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 		Client clientEntity = clientRepository.findById(clientId)
 					.orElseThrow(() -> 
 							new ResourceNotFoundException("Client not found"));
-
+		
 		portfolioEntity.setClient(clientEntity);
 		
 		portfolioEntity.setCreationDate(

@@ -511,30 +511,4 @@ public class ClientRequestValidatorTest {
 	assertThat(errors).contains("Address cannot be null or blank");
 		
 	}
-	
-	
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

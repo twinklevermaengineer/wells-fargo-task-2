@@ -32,7 +32,7 @@ public class ClientController {
 		this.clientService = clientService;
 	}
 	
-	@GetMapping
+	@GetMapping("/")
 	public ResponseEntity<List<ClientResponse>> clientByAddress(@RequestParam(required = false) String address){
 		if(address != null) {
 			logger.info("Fetching client by address {} ", address);
@@ -82,7 +82,7 @@ public class ClientController {
 		
 	}
 	
-	@PostMapping
+	@PostMapping("/")
 	public ResponseEntity<ClientResponse> addClient(@RequestBody ClientRequest clientRequest){
 		logger.info("Recieved new client request {} ", clientRequest.toString());
 		
