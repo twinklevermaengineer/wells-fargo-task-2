@@ -3,6 +3,7 @@ package com.wellsfargo.counselor.controller;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,15 @@ public class PortfolioController{
 		this.portfolioService = portfolioService;
 	}
 	
+	@PostMapping("/")
+	public ResponseEntity<PortfolioResponse> addPortfolio(@RequestBody PortfolioRequest request){
+		
+		logger.info("Adding portfolio for request " + request);
+		
+		PortfolioResponse response = portfolioService.save(request);	
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	}
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<PortfolioResponse> findPortfolioById(
 			@PathVariable Long id){
@@ -47,13 +57,6 @@ public class PortfolioController{
 		return ResponseEntity.ok(portfolio);
 	}
 	
-	@PostMapping("/")
-	public ResponseEntity<PortfolioResponse> addPortfolio(@RequestBody PortfolioRequest request){
-		
-		logger.info("Adding portfolio for request " + request);
-		
-		PortfolioResponse response = portfolioService.save(request);	
-		return ResponseEntity.ok(response);
-	}
+	
 	
 }
