@@ -176,7 +176,7 @@ public class AdvisorRequestValidator {
 	
 	protected void isEmailValid(String email, List<String> errors) {		
 	    if (email == null || email.isBlank()) {
-	    	logger.error("Email cannot be null or blank");
+	       logger.error("Email cannot be null or blank");
 	       errors.add("Email cannot be null or blank");
 	    }
 	    else if(!EMAIL_PATTERN.matcher(email).matches()){
@@ -186,5 +186,3 @@ public class AdvisorRequestValidator {
 	}
 
 }
-
-

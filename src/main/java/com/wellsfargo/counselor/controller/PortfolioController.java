@@ -27,7 +27,7 @@ public class PortfolioController{
 	public PortfolioController(PortfolioService portfolioService) {
 		this.portfolioService = portfolioService;
 	}
-	
+
 	@PostMapping("/")
 	public ResponseEntity<PortfolioResponse> addPortfolio(@RequestBody PortfolioRequest request){
 		

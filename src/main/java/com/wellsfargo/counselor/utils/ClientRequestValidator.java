@@ -31,13 +31,13 @@ public class ClientRequestValidator {
 			ClientRequest clientRequest
 			,Long inputClientId,
 			List<String> errors, String action) {
-		
+
 		basicClientValidation(clientRequest, errors);
 		logger.info("Validating client request");
 		if(errors.size() > 0) {
 			logger.error("Basic validation failed for client request");
 		}
-		
+ 
 		String email = clientRequest.getEmail();
 		if (email != null && !email.isBlank()) {
 		    List<Client> existingClientListUsingEmail = clientRepository.findByEmail(email);

@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,37 +71,6 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 		throw new ResourceNotFoundException("Advisor not found, id: " + id);
 		}
 	}
-
-	@PostMapping("/")
-	public ResponseEntity<AdvisorResponse> addAdvisor(@RequestBody AdvisorRequest advisor) {
-		
-		logger.info("Received new advisor request {}", advisor.toString());
-		AdvisorResponse advisorResponse = advisorService.save(advisor);
-		
-		logger.info("Advisor created successfully, advisor id {}", advisorResponse);
-		return ResponseEntity.ok(advisorResponse);
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteAdvisor(@PathVariable Long id) {
-		
-		logger.warn("Deleting advisor, id: {} ", id);
-		
-		advisorService.deleteById(id);
-		
-		return ResponseEntity.noContent().build();
-
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<String> updateAdvisor(
-			@PathVariable Long id, 
-			@RequestBody AdvisorRequest advisorRequest){
-		logger.info("Fetching advisor id for update request {} ", id);
-		advisorService.updateAdvisor(id, advisorRequest);
-		
-		return ResponseEntity.ok("Advisor updated successfully for id: " + id);	
-	}
 	
 	@GetMapping("/{clientId}/advisor")
 	public ResponseEntity<AdvisorResponse> getAdvisorByClientId(@PathVariable Long clientId){
@@ -113,5 +83,36 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 			}
 		logger.error("Advisor not found associated to clientId: {} ", clientId);
 		return ResponseEntity.noContent().build();	
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<String> updateAdvisor(
+			@PathVariable Long id, 
+			@RequestBody AdvisorRequest advisorRequest){
+		logger.info("Fetching advisor id for update request {} ", id);
+		advisorService.updateAdvisor(id, advisorRequest);
+		
+		return ResponseEntity.ok("Advisor updated successfully for id: " + id);	
+	}
+	
+	@PostMapping("/")
+	public ResponseEntity<AdvisorResponse> addAdvisor(@RequestBody AdvisorRequest advisor) {
+		
+		logger.info("Received new advisor request {}", advisor.toString());
+		AdvisorResponse advisorResponse = advisorService.save(advisor);
+		
+		logger.info("Advisor created successfully, advisor id {}", advisorResponse);
+		return ResponseEntity.status(HttpStatus.CREATED).body(advisorResponse);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteAdvisor(@PathVariable Long id) {
+		
+		logger.warn("Deleting advisor, id: {} ", id);
+		
+		advisorService.deleteById(id);
+		
+		return ResponseEntity.noContent().build();
+
 	}
 }
