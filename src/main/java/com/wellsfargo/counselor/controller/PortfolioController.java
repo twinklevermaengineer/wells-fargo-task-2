@@ -29,7 +29,8 @@ public class PortfolioController{
 	}
 	
 	@PostMapping("/")
-	public ResponseEntity<PortfolioResponse> addPortfolio(@Valid @RequestBody PortfolioRequest request){
+	public ResponseEntity<PortfolioResponse> addPortfolio(
+		@Valid @RequestBody PortfolioRequest request){
 		
 		logger.info("Adding portfolio for request " + request);
 		
