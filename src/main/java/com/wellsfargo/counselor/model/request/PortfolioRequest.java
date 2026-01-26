@@ -12,7 +12,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PortfolioRequest {
 
+	@NotBlank(message = "Creation date is required")
 	private String creationDate;
+
+	@Valid
 	private List<SecurityRequest> securities;
+
+	@NotNull(message = "Client details are required")
+    @Valid
 	private ClientRequest client;
+	
 }
