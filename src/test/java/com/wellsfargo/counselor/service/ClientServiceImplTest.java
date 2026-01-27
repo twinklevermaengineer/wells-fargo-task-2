@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.wellsfargo.counselor.entity.Client;
 import com.wellsfargo.counselor.model.request.ClientRequest;
-import com.wellsfargo.counselor.model.request.ClientResponse;
+import com.wellsfargo.counselor.model.response.ClientResponse;
 import com.wellsfargo.counselor.repository.ClientRepository;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.ClientRequestValidator;

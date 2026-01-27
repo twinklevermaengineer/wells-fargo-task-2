@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
-import com.wellsfargo.counselor.model.request.AdvisorResponse;
+import com.wellsfargo.counselor.model.response.AdvisorResponse;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.service.AdvisorService;
 
@@ -101,7 +101,7 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 		logger.info("Received new advisor request {}", advisor.toString());
 		AdvisorResponse advisorResponse = advisorService.save(advisor);
 		
-		logger.info("Advisor created successfully, advisor id {}", advisorResponse);
+		logger.info("Advisor created successfully, advisor id {}", advisorResponse.getAdvisorId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(advisorResponse);
 	}
 	

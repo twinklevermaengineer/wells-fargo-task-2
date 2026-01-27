@@ -48,4 +48,9 @@ public class Portfolio {
 		
 	}
 	
+	public Portfolio(Long portfolioId) {
+		this.portfolioId = portfolioId;
+	}
+	
+	
 }

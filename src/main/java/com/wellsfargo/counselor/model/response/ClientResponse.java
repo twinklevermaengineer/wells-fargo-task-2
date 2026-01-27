@@ -1,4 +1,4 @@
-package com.wellsfargo.counselor.model.request;
+package com.wellsfargo.counselor.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

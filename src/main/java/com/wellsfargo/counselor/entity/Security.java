@@ -39,9 +39,8 @@ public class Security {
 	private String name;
 	
 	@NotNull
-	@Enumerated(EnumType.STRING)
 	@Column(name = "category", nullable = false)
-	private SecurityType category;
+	private String category;
 	
 	@NotNull
 	@Column(name = "purchase_price",nullable = false)
@@ -62,4 +61,17 @@ public class Security {
 	@JoinColumn(name = "portfolio_id")
 	private Portfolio portfolio;
 	
-  }
+	public Security(String name, String category, BigDecimal purchasePrice,
+					String purchaseDate, Integer quantity,Portfolio portfolio) {
+			this.name = name;
+			this.category = category;
+			this.purchasePrice = purchasePrice;
+			this.purchaseDate = purchaseDate;
+			this.quantity = quantity;
+			this.portfolio = portfolio;
+	
+		}
+	}
+
+
+

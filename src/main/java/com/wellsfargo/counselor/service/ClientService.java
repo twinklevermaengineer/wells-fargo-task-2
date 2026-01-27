@@ -3,7 +3,7 @@ package com.wellsfargo.counselor.service;
 import java.util.List;
 import com.wellsfargo.counselor.entity.Client;
 import com.wellsfargo.counselor.model.request.ClientRequest;
-import com.wellsfargo.counselor.model.request.ClientResponse;
+import com.wellsfargo.counselor.model.response.ClientResponse;
 
 public interface ClientService {
 

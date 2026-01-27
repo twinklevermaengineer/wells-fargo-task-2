@@ -10,11 +10,11 @@ import org.springframework.util.CollectionUtils;
 import com.wellsfargo.counselor.entity.Client;
 import com.wellsfargo.counselor.entity.Portfolio;
 import com.wellsfargo.counselor.entity.Security;
-import com.wellsfargo.counselor.model.request.ClientResponse;
 import com.wellsfargo.counselor.model.request.PortfolioRequest;
-import com.wellsfargo.counselor.model.request.PortfolioResponse;
 import com.wellsfargo.counselor.model.request.SecurityRequest;
-import com.wellsfargo.counselor.model.request.SecurityResponse;
+import com.wellsfargo.counselor.model.response.ClientResponse;
+import com.wellsfargo.counselor.model.response.PortfolioResponse;
+import com.wellsfargo.counselor.model.response.SecurityResponse;
 import com.wellsfargo.counselor.repository.ClientRepository;
 import com.wellsfargo.counselor.repository.PortfolioRepository;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
@@ -78,7 +78,7 @@ public class PortfolioServiceImpl implements PortfolioService {
            			securityEntity.getCategory(),
            			securityEntity.getPurchasePrice(),
            			securityEntity.getPurchaseDate(),
-           			securityEntity.getQuantity()
+           			securityEntity.getQuantity(), id
     	   );
     	   
     	   securityResponseList.add(securityResponse);
@@ -123,7 +123,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 	           			securityEntity.getCategory(),
 	           			securityEntity.getPurchasePrice(),
 	           			securityEntity.getPurchaseDate(),
-	           			securityEntity.getQuantity()
+	           			securityEntity.getQuantity(), null
 	    	   );
 	    	   securityResponseList.add(securityResponse);
 	       }
@@ -190,7 +190,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 					securityEntity.getCategory(),
 					securityEntity.getPurchasePrice(),
 					securityEntity.getPurchaseDate(),
-					securityEntity.getQuantity()
+					securityEntity.getQuantity(), clientId
 			));
 		}
 

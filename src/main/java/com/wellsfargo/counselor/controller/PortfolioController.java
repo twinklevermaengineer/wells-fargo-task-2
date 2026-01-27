@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.wellsfargo.counselor.model.request.PortfolioRequest;
-import com.wellsfargo.counselor.model.request.PortfolioResponse;
+import com.wellsfargo.counselor.model.response.PortfolioResponse;
 import com.wellsfargo.counselor.service.PortfolioService;
 
 @RestController

@@ -2,7 +2,7 @@ package com.wellsfargo.counselor.service;
 
 import java.util.List;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
-import com.wellsfargo.counselor.model.request.AdvisorResponse;
+import com.wellsfargo.counselor.model.response.AdvisorResponse;
 
 public interface AdvisorService {
 	AdvisorResponse findById(Long id);

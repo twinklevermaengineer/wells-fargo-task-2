@@ -1,5 +1,7 @@
 USE wells_fargo;
 
+TRUNCATE TABLE security;
+
 CREATE TABLE security (
 security_id BIGINT AUTO_INCREMENT PRIMARY KEY,
 name VARCHAR(100) NOT NULL,

@@ -3,7 +3,7 @@ package com.wellsfargo.counselor.service;
 import java.util.List;
 
 import com.wellsfargo.counselor.model.request.PortfolioRequest;
-import com.wellsfargo.counselor.model.request.PortfolioResponse;
+import com.wellsfargo.counselor.model.response.PortfolioResponse;
 
 public interface PortfolioService {
 

@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.wellsfargo.counselor.entity.Advisor;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
-import com.wellsfargo.counselor.model.request.AdvisorResponse;
+import com.wellsfargo.counselor.model.response.AdvisorResponse;
 import com.wellsfargo.counselor.repository.AdvisorRepository;
 import com.wellsfargo.counselor.rest.ResourceCreationException;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;

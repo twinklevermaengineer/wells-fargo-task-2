@@ -57,7 +57,7 @@ public ResponseEntity<CustomErrorResponse>handleServerException(ServerException 
 public ResponseEntity<CustomErrorResponse>handleExceptions(Exception e){
 	logger.warn("Unhandled exception occured : {} ", e.getMessage());
 	CustomErrorResponse error = new CustomErrorResponse();
-	error.setStatus(HttpStatus.BAD_REQUEST.value());
+	error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	error.setMessage("An unexpected error occured " + e.getMessage());
 	return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
  }
