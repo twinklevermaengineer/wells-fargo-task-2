@@ -8,7 +8,7 @@ import com.wellsfargo.counselor.model.response.SecurityResponse;
 
 @Component
 public class SecurityMapper {
-	
+
 	 public SecurityResponse mapEntityToResponse(Security security) {
 	        Long portfolioId = Optional.ofNullable(security.getPortfolio())
 	                .map(Portfolio::getPortfolioId)

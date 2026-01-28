@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import com.wellsfargo.counselor.entity.Client;
 import com.wellsfargo.counselor.entity.Portfolio;
@@ -127,7 +128,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 	    	   );
 	    	   securityResponseList.add(securityResponse);
 	       }
-		
+	     logger.info("Map portfolio entity object to portfolio response object");
 			PortfolioResponse response = new PortfolioResponse(
 				portfolioEntity.getPortfolioId(),
 				portfolioEntity.getCreationDate(),
@@ -139,8 +140,10 @@ public class PortfolioServiceImpl implements PortfolioService {
 	}
 
 	@Override
+	@Transactional
 	public PortfolioResponse save(PortfolioRequest portfolioRequest) {
-
+	
+		logger.info("Validating portfolio request for create");
 		validator.validatePortfolioRequest(portfolioRequest);
 		
 		Portfolio portfolioEntity = new Portfolio();
@@ -156,7 +159,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 			        ? portfolioRequest.getCreationDate() 
 			        : LocalDate.now().toString()
 			);
-
+		
 		List<SecurityRequest> securityRequestList = portfolioRequest.getSecurities();
 		
 		if(CollectionUtils.isEmpty(securityRequestList)) {
@@ -183,6 +186,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 		List<Security> securityEntityList = savedPortfolio.getSecurities();
 		
 		List<SecurityResponse> securityListResponse = new ArrayList<>();
+		
+		logger.info("Fetching security entity list");
 		for(Security securityEntity: securityEntityList) {
 			securityListResponse.add(new SecurityResponse(
 					securityEntity.getSecurityId(),
@@ -193,7 +198,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 					securityEntity.getQuantity(), clientId
 			));
 		}
-
+		
+		logger.info("Map portfolio entity object to portfolio response object");
 		PortfolioResponse portfolioResponse = new PortfolioResponse(
 				savedPortfolio.getPortfolioId(),
 				savedPortfolio.getCreationDate(),

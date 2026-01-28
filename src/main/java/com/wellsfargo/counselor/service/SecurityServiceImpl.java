@@ -31,7 +31,7 @@ public class SecurityServiceImpl implements SecurityService{
 	private final SecurityRequestValidator validator;
 	
 	private final PortfolioRepository portfolioRepository;
-	
+
 	public SecurityServiceImpl(SecurityRepository securityRepository,
 								SecurityMapper mapper,
 								SecurityRequestValidator validator,
@@ -48,9 +48,10 @@ public class SecurityServiceImpl implements SecurityService{
 		
 		logger.info("Find security id: {} ", id);
 		Security securityEntity = securityRepository.findById(id)
-				.orElseThrow(() -> 
-				 new ResourceNotFoundException("Security not found with id: " + id)
-				);
+				.orElseThrow(() -> {
+					logger.warn("Security not found with id {} ", id);
+				 return new ResourceNotFoundException("Security not found with id: " + id);
+	});
 		
 		logger.debug("Map security entity object to security response");
 		return mapper.mapEntityToResponse(securityEntity);
@@ -82,11 +83,11 @@ public class SecurityServiceImpl implements SecurityService{
 	public SecurityResponse findByName(String name) {
 		logger.info("Find security by name, {} ", name);
 		Security securityEntity = securityRepository.findByName(name)
-					.orElseThrow(() -> 
-					 new ResourceNotFoundException(
-							 "Security does not exists with this name: " + name
-						  )
-					 );
+					.orElseThrow(() -> {
+					logger.warn("Security does not exist with this name: {} ", name);
+					return new ResourceNotFoundException(
+							 "Security does not exist with this name: " + name);
+	});
 		
 		logger.info("Map security entity to security response");	
 		return mapper.mapEntityToResponse(securityEntity);
@@ -96,7 +97,7 @@ public class SecurityServiceImpl implements SecurityService{
 	@Transactional
 	public SecurityResponse save(SecurityRequest securityRequest) {
 		
-		logger.debug("Validate security request object for save request");
+		logger.debug("Validate security request object recieved for save request");
 		List<String> errors = new ArrayList<>();
 		validator.validateSecurityRequest(securityRequest, errors);
 		
@@ -137,7 +138,7 @@ public class SecurityServiceImpl implements SecurityService{
 		List<String> errors = new ArrayList<>();
 		validator.validateSecurityRequest(securityRequest, errors);
 		 if (!errors.isEmpty()) {
-		        throw new InvalidRequestException("Validation failed: " + String.join(", ", errors));
+		        throw new InvalidRequestException("Validation failed: " +  errors);
 		    }
 		
 		logger.info("Fetching security object associated with id: {} ", id);

@@ -55,7 +55,7 @@ public class SecurityController {
 
 		return ResponseEntity.ok(response);
 	}
-		
+
 	@PostMapping("/")
 	public ResponseEntity<SecurityResponse> addSecurity(@RequestBody SecurityRequest request){
 		logger.info("Received new security request {} ", request);

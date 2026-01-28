@@ -91,9 +91,9 @@ public class AdvisorServiceImplTest {
 
 	    // Act & Assert
 	   ResourceNotFoundException exception =
-			   assertThrows(ResourceNotFoundException.class, () -> {
-				   			advisorServiceImpl.findById(id);
-					  	});
+			   assertThrows(ResourceNotFoundException.class, () -> 
+				   			advisorServiceImpl.findById(id)
+					  	);
 	   
 	   assertThat(exception.getMessage().contains("Advisor not found with id " + id));
 	   
