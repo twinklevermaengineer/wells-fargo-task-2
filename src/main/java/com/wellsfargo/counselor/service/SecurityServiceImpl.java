@@ -65,6 +65,11 @@ public class SecurityServiceImpl implements SecurityService{
 	
 		try {
 			List<Security> securityList = securityRepository.findAll();
+			if (securityList.isEmpty()) {
+				logger.warn("Security does not exist");
+				throw new ResourceNotFoundException(
+						 "Security does not exist");
+			}
 			
 			logger.info("Map securities from DB to security response");
 			for(Security security: securityList) {

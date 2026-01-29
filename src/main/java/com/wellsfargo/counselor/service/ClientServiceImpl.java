@@ -162,19 +162,18 @@ public class ClientServiceImpl implements ClientService{
 		
 		List<ClientResponse> clientResponse = new ArrayList<>();
 		try {
-		List<Client> client = clientRepository.findByAdvisor_AdvisorId(advisorId);
-		
-		for(Client clientEntity: client) {
-			clientResponse.add(new ClientResponse(
-					clientEntity.getClientId(),
-					clientEntity.getFirstName(),
-					clientEntity.getLastName(),
-					clientEntity.getAddress(),
-					clientEntity.getPhone(),
-					clientEntity.getEmail()
-					
-					));
-		}
+				List<Client> client = clientRepository.findByAdvisorAdvisorId(advisorId);
+				for(Client clientEntity: client) {
+					clientResponse.add(new ClientResponse(
+							clientEntity.getClientId(),
+							clientEntity.getFirstName(),
+							clientEntity.getLastName(),
+							clientEntity.getAddress(),
+							clientEntity.getPhone(),
+							clientEntity.getEmail()
+							
+							));
+				}
 		}catch(Exception e) {
 			throw new ResourceNotFoundException("Client not found with advisorId: " + advisorId + " " + e.getMessage());
 		}

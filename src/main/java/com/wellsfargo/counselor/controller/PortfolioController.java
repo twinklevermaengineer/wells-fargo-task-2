@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wellsfargo.counselor.model.request.PortfolioRequest;
 import com.wellsfargo.counselor.model.response.PortfolioResponse;
 import com.wellsfargo.counselor.service.PortfolioService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/portfolios")
@@ -28,15 +33,35 @@ public class PortfolioController{
 		this.portfolioService = portfolioService;
 	}
 
-	@PostMapping("/")
+	@Operation(summary = "Add portfolio",
+			   description = "Create new portfolio")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201",
+						 description = "Portfolio created successfully",
+						 content = @Content(mediaType = "application/json",
+						 					schema = @Schema(implementation = PortfolioResponse.class))),
+			 @ApiResponse(responseCode = "400", description = "Invalid request payload"),
+			 @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+	@PostMapping
 	public ResponseEntity<PortfolioResponse> addPortfolio(@RequestBody PortfolioRequest request){
 		
-		logger.info("Adding portfolio for request " + request);
+		logger.info("Adding portfolio for request {} ", request);
 		
 		PortfolioResponse response = portfolioService.save(request);	
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
+	@Operation(summary = "Get portfolio by Id",
+			   description = "Retreive portfolio details by Id")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200",
+						 description = "Portfolio find by Id",
+						 content = @Content(mediaType = "application/json",
+						 					schema = @Schema(implementation = PortfolioResponse.class))),
+			@ApiResponse(responseCode = "400", description = "Portfolio not found"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")		
+  })
 	@GetMapping("/{id}")
 	public ResponseEntity<PortfolioResponse> findPortfolioById(
 			@PathVariable Long id){
@@ -48,7 +73,15 @@ public class PortfolioController{
 		return ResponseEntity.ok(portfolio);
 	}
 	
-	@GetMapping("/")
+	@Operation(summary = "Get all portfolio",
+			   description = "Get all the list of portfolio")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200",
+						 description = "Portfolio list found",
+						  content = @Content(mediaType = "application/json",
+						  					 schema = @Schema(implementation = PortfolioResponse[].class))),
+  })
+	@GetMapping
 	public ResponseEntity<List<PortfolioResponse>> getPortfolio(){
 		
 		logger.info("Fetching all portfolios");
@@ -56,7 +89,4 @@ public class PortfolioController{
 		List<PortfolioResponse> portfolio = portfolioService.findAll();
 		return ResponseEntity.ok(portfolio);
 	}
-	
-	
-	
 }

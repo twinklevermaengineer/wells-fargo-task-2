@@ -1,0 +1,2 @@
+ALTER TABLE advisor
+MODIFY phone VARCHAR(10) NOT NULL;
