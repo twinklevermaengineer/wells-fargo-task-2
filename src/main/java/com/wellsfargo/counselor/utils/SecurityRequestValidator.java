@@ -10,6 +10,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import com.wellsfargo.counselor.model.request.SecurityRequest;
 
+/**
+ * Validator component for {@link com.wellsfargo.counselor.model.request.SecurityRequest}.
+ * <p>
+ * This class performs validation on incoming security request data and collects
+ * validation errors without throwing exceptions. Each validation rule appends
+ * a human-readable error message to the provided {@code errors} list.
+ * <p>
+ * Validation includes:
+ * <ul>
+ *   <li>Portfolio ID presence</li>
+ *   <li>Security name format and length</li>
+ *   <li>Category validity against {@link SecurityType}</li>
+ *   <li>Purchase price constraints</li>
+ *   <li>Purchase date format</li>
+ *   <li>Quantity constraints</li>
+ * </ul>
+ *
+ * This class is intended to be used as a Spring-managed component.
+*/
 @Component
 public class SecurityRequestValidator {
 
@@ -17,7 +36,23 @@ public class SecurityRequestValidator {
 			LoggerFactory.getLogger(SecurityRequestValidator.class);
 	
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+	
+	/**
+	 * Validates the given {@link SecurityRequest} and collects validation errors.
+	 * <p>
+	 * This method performs high-level validation, including:
+	 * <ul>
+	 *   <li>Checking that the request itself is not {@code null}</li>
+	 *   <li>Validating the presence of a portfolio ID</li>
+	 *   <li>Delegating field-level validation to internal helper methods</li>
+	 * </ul>
+	 * <p>
+	 * Validation errors are added to the provided {@code errors} list.
+	 * This method does not throw exceptions.
+	 *
+	 * @param securityRequest the security request to validate, may be {@code null}
+	 * @param errors          a list of error messages to which validation errors will be added
+    */
 	public void validateSecurityRequest(SecurityRequest securityRequest, List<String> errors) {
 		
 		if(securityRequest == null) {
@@ -71,7 +106,24 @@ public class SecurityRequestValidator {
 			errors.add("Name can contain letters, spaces, apostrophes, periods, and hyphens");
 		}
 	}
-
+	
+	/**
+	 * Validates the given security category and adds error messages to the provided list if validation fails.
+	 * <p>
+	 * This method performs the following checks:
+	 * <ul>
+	 *   <li> If {@code categoryName} is {@code null}, or blank, logs an error and 
+	 *        add a corresponding message to {@code errors}. </li>
+	 *   <li> If {@code categoryName} exceeds 20 characters, logs an error and
+	 *   	  add a corresponding messages to {@code errors}. </li>
+	 *   <li> If {@code categoryName} does not match a valid {@link SecurityType}, logs an error
+	 *   	  and add a corresponding messages to {@code errors}. </li>
+	 * </ul>
+	 * <p>
+	 * 
+	 * @param categoryName the category name to validate, may be {@code null}
+	 * @param errors       a list of error message to which validation error will be added
+	*/
 	protected void validateCategory(String categoryName, List<String> errors) {
 
 		if(categoryName == null || categoryName.isBlank()) {
@@ -96,6 +148,20 @@ public class SecurityRequestValidator {
 		}
 	}
 
+	/**
+	 * Validates the given purchase price and adds error messages to the provided list if validation fails.
+	 * <p>
+	 * The method performs the following checks:
+	 * <ul>
+	 *   <li> If {@code price} is {@code null}, logs an error and adds acorresponding message to {@code errors}. </li>
+	 *   <li> If {@code price} is less than equal to 0, logs an error and adds a corresponding message to {@code errors}. </li>
+	 *   <li> If {@code price} is greater than 2 decimal places, logs an error and adds a corresponding message to {@code errors}. </li>
+	 *   <li> If {@code price} is greater than 8 digits before decimal places, logs an error and add a corresponding message to {@code errors}. </li>
+	 * </ul>
+	 * 
+	 * @param price  the price to validate, may be {@code null}
+	 * @param errors a list of error message to which validation error will be added
+	*/
 	protected void validatePurchasePrice(BigDecimal price, List<String> errors) {
 
 		if(price == null) {
@@ -113,7 +179,19 @@ public class SecurityRequestValidator {
 		    errors.add("Price can have at most 8 digits before decimal");
 		}
 	}
-	
+
+	/**
+	 * Validates the given purchase date and adds error messages to the provided list if validation fails.
+	 * <p>
+	 * The method performs the following checks:
+	 * <ul>
+	 *   <li> If {@code purchaseDate} is {@code null}, or blank, logs an error and adds a corresponding message to {@code errors}. </li>
+	 *   <li> If {@code purchaseDate} is not in date format, logs an error and adds a corresponding messages to {@code errors}. </li>
+	 * </ul>
+	 * 
+	 * @param purchaseDate the purchase date to validate, may be {@code null}
+	 * @param errors       a list of error message to which validation error will be added 
+	*/
 	protected void validatePurchaseDate(String purchaseDate, List<String> errors) {
 	
 		if(purchaseDate == null || purchaseDate.isBlank()) {
@@ -129,7 +207,19 @@ public class SecurityRequestValidator {
 	        errors.add("Purchase date must be in yyyy-mm-dd format");
 	    }
 	}
-
+	
+	/**
+	 * Validates the given quantity and adds error messages to the provided list if validation fails.
+	 * <p>
+	 * The method performs the following checks:
+	 * <ul>
+	 *   <li> If {@code quantity} is {@code null}, logs an error and adds a corresponding message to {@code errors}. </li>
+	 *   <li> If {@code quantity} is less than or equal to 0, logs an error and a corresponding message to {@code errors}. </li> 
+	 * </ul>
+	 * 
+	 * @param quantity the quantity to validate, may be {@code null}
+	 * @param errors   a list of error message to which validation errors will be added
+	*/
 	protected void validateQuantity(Integer quantity, List<String> errors) {
 		
 		if(quantity == null) {

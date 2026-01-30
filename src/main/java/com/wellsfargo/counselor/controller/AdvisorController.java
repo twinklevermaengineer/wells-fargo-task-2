@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.wellsfargo.counselor.model.request.AdvisorRequest;
 import com.wellsfargo.counselor.model.response.AdvisorResponse;
+import com.wellsfargo.counselor.rest.CustomErrorResponse;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.service.AdvisorService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/advisors")
@@ -57,7 +60,7 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 	@GetMapping
 	public ResponseEntity<List<AdvisorResponse>> getAdvisor(
 			@RequestParam(required = false)
-			@io.swagger.v3.oas.annotations.Parameter(description = "Filter advisors by address") 
+			@Parameter(description = "Filter advisors by address") 
 			String address) {
 
 			if(address !=null) {
@@ -95,19 +98,17 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 						 					schema = @Schema(implementation = AdvisorResponse.class))),
 			@ApiResponse(responseCode = "404",
 						 description = "Advisor not found",
-						 content = @Content )
+						 content = @Content(mediaType = "application/json",
+                         schema = @Schema(implementation = CustomErrorResponse.class)))
   })
 	@GetMapping("/{id}")
-	public ResponseEntity<AdvisorResponse> getAdvisorById(@PathVariable Long id) {
+	public ResponseEntity<AdvisorResponse> getAdvisorById(
+		    @Parameter(description = "ID of the advisor to retrieve", required = true)
+			@PathVariable Long id) {
 	logger.info("Fetching advisor, id: {} ", id);	
 	AdvisorResponse advisor =	advisorService.findById(id);
-		if(advisor != null) {
-			logger.info("Found advisor, id: {} " , advisor);
-			return ResponseEntity.ok(advisor);
-		}else {
-			logger.error("Advisor not found, id: {} ", id);
-		throw new ResourceNotFoundException("Advisor not found, id: " + id);
-		}
+	return ResponseEntity.ok(advisor);
+	
 	}
 	
 	@Operation(summary = "Get advisor by client Id",
@@ -117,34 +118,31 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 						 description = "Advisor associated with client retrieved successfully",
 						 content = @Content(mediaType = "application/json",
 						 					schema = @Schema(implementation = AdvisorResponse.class))),
-			@ApiResponse(responseCode = "204",
-						 description = "No Advisor associated with the Client Id",
-						 content = @Content)
+			@ApiResponse(responseCode = "404",
+						 description = "Advisor not found for the given client ID",
+						 content = @Content(mediaType = "application/json", 
+						 					schema = @Schema(implementation = CustomErrorResponse.class)))
   })
-	@GetMapping("/{clientId}/advisor")
-	public ResponseEntity<AdvisorResponse> getAdvisorByClientId(@PathVariable Long clientId){
+	@GetMapping("/clients/{clientId}/advisor")
+	public ResponseEntity<AdvisorResponse> getAdvisorByClientId(
+			 @Parameter(description = "ID of the client to retrieve advisor", required = true)
+			 @PathVariable Long clientId){
 		logger.info("Fetching advisor by client id, clientId: {} ", clientId);
 		AdvisorResponse response = advisorService.findAdvisorByClientId(clientId);
 		
-			if(response != null) {
-				logger.info("Advisor found associated to client id: {} ", clientId);
-				return ResponseEntity.ok(response);
-			}
-		logger.error("Advisor not found associated to clientId: {} ", clientId);
-	    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return ResponseEntity.ok(response);
 	}
 	
 	@Operation(summary = "Update advisor",
 			   description = "Update advisor details by Id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200",
-						 description = "Advisor updated successfully",
-						 content = @Content)	
+			@ApiResponse(responseCode = "200",description = "Advisor updated successfully")	
   })
 	@PutMapping("/{id}")
 	public ResponseEntity<String> updateAdvisor(
+			 @Parameter(description = "ID of the advisor to update is required", required = true)
 			@PathVariable Long id, 
-			@RequestBody AdvisorRequest advisorRequest){
+			@Valid @RequestBody AdvisorRequest advisorRequest){
 		logger.info("Fetching advisor id for update request {} ", id);
 		advisorService.updateAdvisor(id, advisorRequest);
 		
@@ -160,7 +158,7 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 				  					 schema = @Schema(implementation = AdvisorResponse.class)))
   })
 	@PostMapping
-	public ResponseEntity<AdvisorResponse> addAdvisor(@RequestBody AdvisorRequest advisor) {
+	public ResponseEntity<AdvisorResponse> addAdvisor(@Valid @RequestBody AdvisorRequest advisor) {
 		
 		logger.info("Received new advisor request {}", advisor.toString());
 		AdvisorResponse advisorResponse = advisorService.save(advisor);
@@ -172,15 +170,13 @@ private static final Logger logger = LoggerFactory.getLogger(AdvisorController.c
 	@Operation(summary = "Delete advisor",
 			   description = "Delete an advisor by Id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204",
-						 description = "Advisor deleted successfully",
-						 content = @Content),
-			@ApiResponse(responseCode = "404",
-						 description = "Advisor not found",
-						 content = @Content)
+			@ApiResponse(responseCode = "204", description = "Advisor deleted successfully"),
+			@ApiResponse(responseCode = "404", description = "Advisor not found")
   })	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteAdvisor(@PathVariable Long id) {
+	public ResponseEntity<String> deleteAdvisor(
+			@Parameter(description = "ID of the advisor to retrieve", required = true)
+			@PathVariable Long id) {
 		
 		logger.warn("Deleting advisor, id: {} ", id);
 		

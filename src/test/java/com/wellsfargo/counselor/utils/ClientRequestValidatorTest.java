@@ -326,7 +326,7 @@ public class ClientRequestValidatorTest {
 	
 	//Assert
 	assertThat(errors).isNotEmpty();
-	assertThat(errors).contains("Last name can only have 100  alpha characters");
+	assertThat(errors).contains("Last name can only have 100 alpha characters");
 		
 	}
 	

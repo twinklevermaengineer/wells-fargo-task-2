@@ -13,7 +13,6 @@ import com.wellsfargo.counselor.model.response.AdvisorResponse;
 import com.wellsfargo.counselor.rest.ResourceCreationException;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.AdvisorRequestValidator;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,16 +30,15 @@ public class AdvisorServiceImpl implements AdvisorService {
 	
 	@Override
 	public AdvisorResponse findById(Long id) {
-		logger.info("Find Advisor, id {} ", id);
+		logger.info("Finding Advisor, id {} ", id);
 		
 		Advisor advisorFromDB = advisorRepository.findById(id)
-				.orElseThrow(() -> {
-				logger.error("Advisor not found with id {} ", id);
-				return new ResourceNotFoundException("Advisor not found with id " + id);
-				});
-		
+				.orElseThrow(() -> 
+					new ResourceNotFoundException("Advisor not found with id " + id)
+				);
 		return new AdvisorResponse(
-					id, advisorFromDB.getFirstName(),
+					advisorFromDB.getAdvisorId(),
+					advisorFromDB.getFirstName(),
 					advisorFromDB.getLastName(),
 					advisorFromDB.getAddress(),
 					advisorFromDB.getPhone(),
@@ -54,7 +52,10 @@ public class AdvisorServiceImpl implements AdvisorService {
 		// Validate Input request
 		List<String> errorMessages = new ArrayList<>();
 		validator.validateAdvisorRequest(advisorRequest,null,errorMessages);
-
+		if (!errorMessages.isEmpty()) {
+		    throw new ResourceCreationException(
+		        "Validation failed: " +  errorMessages);
+		}
 		try {
 		// Map Request object to Entity Object
 		logger.info("Advisor request object map to asdvisor entity object");
@@ -91,7 +92,11 @@ public class AdvisorServiceImpl implements AdvisorService {
 	public void updateAdvisor(Long id, AdvisorRequest advisorRequest) {
 		List<String> errors = new ArrayList<>();
 		validator.validateAdvisorRequest(advisorRequest, id, errors);
-
+		
+		if (!errors.isEmpty()) {
+		    throw new ResourceCreationException(
+		        "Validation failed: " + errors);
+	}
 		logger.info("Find advisor with id {} ", id);
 		Advisor advisor = advisorRepository.findById(id)
 	            .orElseThrow(() -> 
@@ -156,7 +161,7 @@ public class AdvisorServiceImpl implements AdvisorService {
 				 .orElseThrow(() ->
 	                new ResourceNotFoundException("Advisor not found for client id " + clientId));
 		
-		logger.info("Advisor entity object map to advisor response object");
+		logger.info("Mapping advisor entity to AdvisorResponse DTO");
 	return new AdvisorResponse(
 				advisor.getAdvisorId(),
 				advisor.getFirstName(),

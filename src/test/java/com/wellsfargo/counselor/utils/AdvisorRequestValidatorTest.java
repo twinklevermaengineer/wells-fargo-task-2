@@ -236,7 +236,7 @@ public class AdvisorRequestValidatorTest {
 		
 		//Arrange
 		AdvisorRequest inValidRequest = new AdvisorRequest();
-		inValidRequest.setFirstName("     ");
+		inValidRequest.setFirstName(" John123  ");
 		inValidRequest.setLastName("Doe");
 		inValidRequest.setEmail(null);
 		inValidRequest.setPhone("1234567899");
