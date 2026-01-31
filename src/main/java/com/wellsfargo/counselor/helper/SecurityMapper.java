@@ -15,6 +15,16 @@ import com.wellsfargo.counselor.model.response.SecurityResponse;
  */
 @Component
 public class SecurityMapper {
+	/**
+     * Default constructor.
+     * <p>
+     * Spring requires a default constructor to manage this component as a bean.
+     * </p>
+     */
+	
+	public SecurityMapper() {
+		
+	}
 
 	/*
 	*Converts a {@link Security} entity into a {@link SecurityResponse}.

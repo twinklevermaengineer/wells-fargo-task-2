@@ -17,6 +17,14 @@ import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.rest.ServerException;
 import com.wellsfargo.counselor.utils.ClientRequestValidator;
 
+/**
+ * Implementation of {@link ClientService} for managing Client entities.
+ * Provides operations to create, read, update and delete clients,
+ * as well as fetching clients by specific criteria such as address or advisor ID
+ * 
+ * @author Twinkle Verma
+ * @version 1.0
+*/
 @Service
 public class ClientServiceImpl implements ClientService{
 	private static final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
@@ -24,11 +32,24 @@ public class ClientServiceImpl implements ClientService{
 	private ClientRepository clientRepository;
 	private ClientRequestValidator validator;
 	
+	/**
+	 * Constructs an ClientServiceImpl with the specified repository and validator.
+	 * 
+	 * @param clientRepository the repository used to access client data
+	 * @param validator the validator used to validate client requests
+	*/
 	public ClientServiceImpl(ClientRepository clientRepository, ClientRequestValidator validator) {
 		this.clientRepository = clientRepository;
 		this.validator = validator;
 	}
 
+	/**
+	 * Find a client by its unique ID
+	 * 
+	 * @param id the ID of the client to retrieve
+	 * @return the {@link ClientResponse} representing the client
+	*/
+	
 	@Override
 	public ClientResponse findById(Long id) {
 		
@@ -42,13 +63,24 @@ public class ClientServiceImpl implements ClientService{
 			Client client = clientFromDb.get();
 	
 			ClientResponse clientResponse = new ClientResponse(
-					id, client.getFirstName(), client.getLastName(),client.getAddress(),
-					client.getPhone(),client.getEmail());
-				return clientResponse;
-		}
+										id, client.getFirstName(),
+										client.getLastName(),
+										client.getAddress(),
+										client.getPhone(),
+										client.getEmail());
+							return clientResponse;
+			}
     		return null;
      }
-
+	
+	/**
+	 * Find the client associated with specific address
+	 * 
+	 *  @param address the address of the client
+	 *  @return a list of {@link ClientResponse} objects representing all client associated with the address
+	 *  @throws ResourceNotFoundException if client not found with similar address
+	 * 
+	*/
 	@Override
 	public List<ClientResponse> findByAddress(String address) {
 		logger.info("Client found with address: " + address);
@@ -71,6 +103,13 @@ public class ClientServiceImpl implements ClientService{
 		}
 		return clientList;
 }
+	
+	/**
+	 * Retrieve all the clients from repository.
+	 * 
+	 * @return a list of {@link ClientResponse} objects representing all clients
+	 * @throws ServerException if retrieving the client list data fails
+	*/
 	@Override
 	public List<ClientResponse> findAll() {
 		
@@ -89,7 +128,15 @@ public class ClientServiceImpl implements ClientService{
 		}
 		return clientsList;	
 	}
-
+	
+	/**
+	 * Save a new client to the repository after validating the request.
+	 * 
+	 * @param clientRequest the client data to save
+	 * @return the {@link ClientResponse} representing the saved client
+	 * @throws InvalidRequestException if validation fails
+	 * @throws ResourceCreationException if saving the client fails
+	*/
 	@Override
 	@Transactional
 	public ClientResponse save(ClientRequest clientRequest) {
@@ -127,9 +174,16 @@ public class ClientServiceImpl implements ClientService{
 	
 	}
 		return null;
-	
 }
-
+	
+	/**
+	 * Update an existing client with the given ID using the provided request data.
+	 * 
+	 * @param id the ID of the client to update
+	 * @param clientRequest the new client data
+	 * @throws InvalidRequestException if validation fails
+	 * @throws ResourceNotFoundException if no client exists with the given ID
+	*/
 	@Override
 	@Transactional
 	public Client updateClient(Long id, ClientRequest clientRequest) {
@@ -156,7 +210,14 @@ public class ClientServiceImpl implements ClientService{
 		
 		return clientRepository.save(client);
 	}
-
+	
+	/**
+	 * Find the client associated with a specific advisor ID.
+	 * 
+	 * @param advisorId the ID of the advisor
+	 * @return the {@link ClientResponse} representing the list of the client
+	 * @throws ResourceNotFoundException if no client is found for the given advisor ID
+	*/
 	@Override
 	public List<ClientResponse> findClientByAdvisorId(Long advisorId) {
 		
@@ -171,9 +232,8 @@ public class ClientServiceImpl implements ClientService{
 							clientEntity.getAddress(),
 							clientEntity.getPhone(),
 							clientEntity.getEmail()
-							
-							));
-				}
+					));
+			}
 		}catch(Exception e) {
 			throw new ResourceNotFoundException("Client not found with advisorId: " + advisorId + " " + e.getMessage());
 		}

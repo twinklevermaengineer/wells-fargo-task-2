@@ -21,6 +21,25 @@ import com.wellsfargo.counselor.repository.PortfolioRepository;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.PortfolioRequestValidator;
 
+/**
+ * Implementation of {@link PortfolioService} for managing {@link Portfolio} entities.
+ * <p>
+ * Provides operations to create, retrieve, and list portfolios, including
+ * mapping between entity and response objects. Utilizes repositories for
+ * data access and a validator for request validation.
+ * </p>
+ * 
+ * <p>
+ * This service interacts with {@link PortfolioRepository} and {@link ClientRepository}.
+ * </p>
+ * 
+ * <p>
+ * All create operations are transactional to ensure data consistency.
+ * </p>
+ * 
+ * @author Twinkle Verma
+ * @version 1.0
+ */
 @Service
 public class PortfolioServiceImpl implements PortfolioService {
 
@@ -30,6 +49,15 @@ public class PortfolioServiceImpl implements PortfolioService {
     private final ClientRepository clientRepository;
     private PortfolioRequestValidator validator;
 
+	/**
+	 * Constructs an PortfolioServiceImpl with the required dependencies.
+	 * 
+	 * @param portfolioRepository the repository for portfolio entities
+	 * @param clientRepository the repository for client entities
+	 * @param validator the validator for portfolio requests
+	 * 
+	 * 
+	*/
     public PortfolioServiceImpl(
     			PortfolioRepository portfolioRepository,
     			ClientRepository clientRepository ,
@@ -39,7 +67,14 @@ public class PortfolioServiceImpl implements PortfolioService {
     		this.clientRepository = clientRepository;
     		this.validator = validator;   
     }
-
+    
+	/**
+	 * Retrieves a portfolio by its ID.
+	 * 
+	 * @param id the ID of the portfolio
+	 * @return a {@link PortfolioResponse} containing portfolio, client, and security details
+	 *@throws ResourceNotFoundException if portfolio with the given ID does not exist 
+	*/
     @Override
     public PortfolioResponse findById(Long id) {
     	
@@ -93,6 +128,12 @@ public class PortfolioServiceImpl implements PortfolioService {
                 clientResponse);
     }
 
+    
+	/**
+	 * Retrieves all portfolios from the system.
+	 * 
+	 * @return a list of {@link PortfolioResponse} objects containing portfolio, client, and security details
+	*/
 	@Override
 	public List<PortfolioResponse> findAll() {
 		
@@ -138,7 +179,18 @@ public class PortfolioServiceImpl implements PortfolioService {
 		}
 			return portfolioResponse;
 	}
-
+	
+	/**
+	 * Creates and saves a new portfolio.
+	 * <p>
+	 * Validates the request, assigns the portfolio to a client, and persists it.
+	 * Securities are initialized empty and can be updated later.
+	 * </p>
+	 * 
+	 * @param portfolioRequest the request containing portfolio data
+	 * @return a {@link PortfolioResponse} representing the saved portfolio
+	 * @throws ResourceNotFoundException if the specified client does not exists
+	*/
 	@Override
 	@Transactional
 	public PortfolioResponse save(PortfolioRequest portfolioRequest) {
@@ -198,7 +250,6 @@ public class PortfolioServiceImpl implements PortfolioService {
 					securityEntity.getQuantity(), clientId
 			));
 		}
-		
 		logger.info("Map portfolio entity object to portfolio response object");
 		PortfolioResponse portfolioResponse = new PortfolioResponse(
 				savedPortfolio.getPortfolioId(),
@@ -206,8 +257,6 @@ public class PortfolioServiceImpl implements PortfolioService {
 				securityListResponse,
 				clientResponse
 			);
-		
 		return portfolioResponse;	
 	}
-	
 }

@@ -15,9 +15,19 @@ import com.wellsfargo.counselor.repository.SecurityRepository;
 import com.wellsfargo.counselor.rest.InvalidRequestException;
 import com.wellsfargo.counselor.rest.ResourceNotFoundException;
 import com.wellsfargo.counselor.utils.SecurityRequestValidator;
-
 import jakarta.transaction.Transactional;
-
+/**
+ * Implementation of {@link SecurityService} that provides CRUD operations
+ * for {@link Security} entities. 
+ * <p>
+ * This service handles the business logic for creating, updating, 
+ * and retrieving securities, as well as mapping them to and from 
+ * {@link SecurityResponse} objects.
+ * </p>
+ * 
+ * @author Twinkle Verma
+ * @version 1.0
+ */
 @Service
 public class SecurityServiceImpl implements SecurityService{
 	
@@ -32,6 +42,15 @@ public class SecurityServiceImpl implements SecurityService{
 	
 	private final PortfolioRepository portfolioRepository;
 
+	/**
+	 * Constructs a {@code SecurityServiceImpl} with the required dependencies.
+	 * 
+	 * @param securityRepository the repository for security entities
+	 * @param mapper the mapper for mapping entity object to response object
+	 * @param validator the validator for security requests
+	 * @param portfolioRepository the repository for portfolio entities
+	 * 
+	*/
 	public SecurityServiceImpl(SecurityRepository securityRepository,
 								SecurityMapper mapper,
 								SecurityRequestValidator validator,
@@ -43,6 +62,13 @@ public class SecurityServiceImpl implements SecurityService{
 		this.portfolioRepository = portfolioRepository;
 	}
 
+	/**
+	 * Retrieves a security by its ID.
+	 * 
+	 * @param id the ID of the security
+	 * @return a {@link SecurityResponse} containing security details and portfolio ID
+	 * @throws ResourceNotFoundException if security with the given ID does not exist 
+	*/
 	@Override
 	public SecurityResponse findById(Long id) {
 		
@@ -56,6 +82,14 @@ public class SecurityServiceImpl implements SecurityService{
 		logger.debug("Map security entity object to security response");
 		return mapper.mapEntityToResponse(securityEntity);
 	}
+
+	/**
+	 * Retrieves all securities from the system.
+	 * 
+	 * @return a list of {@link SecurityResponse} objects containing portfolio ID, security details
+	 * @throws ResourceNotFoundException if no securities are found or an error occurs during retrieval
+	 * 
+	*/
 
 	@Override
 	public List<SecurityResponse> findAll() {
@@ -84,6 +118,14 @@ public class SecurityServiceImpl implements SecurityService{
 		return responseList;
 	}
 
+	/**
+	 * Retrieves a security by its name.
+	 * 
+	 * @param name the name of the security
+	 * @return a {@link SecurityResponse} containing security details
+	 * @throws ResourceNotFoundException if security does not exist with this name
+	*/
+	
 	@Override
 	public SecurityResponse findByName(String name) {
 		logger.info("Find security by name, {} ", name);
@@ -98,11 +140,23 @@ public class SecurityServiceImpl implements SecurityService{
 		return mapper.mapEntityToResponse(securityEntity);
 	}
 
+	/**
+	 * Creates and saves a new security.
+	 * 
+	 * <p>
+	 * Validates the security request for creating new security
+	 * </p>
+	 * 
+	 * @param securityRequest the request to create a security
+	 * @return a {@link SecurityResponse} representing a saved security
+	 * @throws InvalidRequestException if validation fails
+	*/
+	
 	@Override
 	@Transactional
 	public SecurityResponse save(SecurityRequest securityRequest) {
 		
-		logger.debug("Validate security request object recieved for save request");
+		logger.debug("Validate security request object received for save request");
 		List<String> errors = new ArrayList<>();
 		validator.validateSecurityRequest(securityRequest, errors);
 		
@@ -135,6 +189,14 @@ public class SecurityServiceImpl implements SecurityService{
 		logger.debug("Map security entity object to security response object");
 		return mapper.mapEntityToResponse(savedSecurity);
 	}
+	
+	/**Update an existing security with the given ID using the provided request data.
+	 * 
+	 * @param id the ID of the security to update
+	 * @param securityRequest the new security data
+	 * @throws InvalidRequestException if validation fails
+	 * @throws ResourceNotFoundException if the security or associated portfolio is not found
+	*/
 
 	@Override
 	@Transactional
