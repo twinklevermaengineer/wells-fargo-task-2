@@ -12,8 +12,8 @@ public class GlobalExceptionHandler {
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 @ExceptionHandler(ResourceNotFoundException.class)
-public ResponseEntity<CustomErrorResponse>handleUserNotFoundException(ResourceNotFoundException e){
-	logger.warn("User not found : {} " ,e.getMessage());
+public ResponseEntity<CustomErrorResponse>handleResourceNotFoundException(ResourceNotFoundException e){
+	logger.warn("Resource not found : {} " ,e.getMessage());
 	CustomErrorResponse error = new CustomErrorResponse();
 	
 	error.setStatus(HttpStatus.NOT_FOUND.value());
@@ -51,6 +51,15 @@ public ResponseEntity<CustomErrorResponse>handleServerException(ServerException 
 	
 	return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	
+}
+
+@ExceptionHandler(AnalyticsServiceException.class)
+public ResponseEntity<CustomErrorResponse>handleUserNotFoundException(AnalyticsServiceException e){
+	logger.warn("User not found : {} " ,e.getMessage());
+	CustomErrorResponse error = new CustomErrorResponse();
+	error.setStatus(HttpStatus.NOT_FOUND.value());
+	error.setMessage(e.getMessage());
+	return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 }
 
 @ExceptionHandler(Exception.class)

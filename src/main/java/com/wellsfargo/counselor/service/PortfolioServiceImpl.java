@@ -114,7 +114,8 @@ public class PortfolioServiceImpl implements PortfolioService {
            			securityEntity.getCategory(),
            			securityEntity.getPurchasePrice(),
            			securityEntity.getPurchaseDate(),
-           			securityEntity.getQuantity(), id
+           			securityEntity.getQuantity(),
+           			portfolioEntity.getPortfolioId()
     	   );
     	   
     	   securityResponseList.add(securityResponse);
@@ -165,7 +166,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 	           			securityEntity.getCategory(),
 	           			securityEntity.getPurchasePrice(),
 	           			securityEntity.getPurchaseDate(),
-	           			securityEntity.getQuantity(), null
+	           			securityEntity.getQuantity(),
+	           			portfolioEntity.getPortfolioId()
 	    	   );
 	    	   securityResponseList.add(securityResponse);
 	       }
@@ -247,7 +249,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 					securityEntity.getCategory(),
 					securityEntity.getPurchasePrice(),
 					securityEntity.getPurchaseDate(),
-					securityEntity.getQuantity(), clientId
+					securityEntity.getQuantity(),
+					savedPortfolio.getPortfolioId()
 			));
 		}
 		logger.info("Map portfolio entity object to portfolio response object");

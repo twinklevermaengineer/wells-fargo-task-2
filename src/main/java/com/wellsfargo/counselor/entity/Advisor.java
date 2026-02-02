@@ -44,7 +44,7 @@ public class Advisor {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "advisor_id")
     private Long advisorId;
-	
+
 	/** Advisor's first name. */
     @NotBlank
     @Column(name = "first_name", nullable = false)
@@ -54,12 +54,12 @@ public class Advisor {
     @NotBlank
     @Column(name = "last_name", nullable = false)
     private String lastName;
-	
+
 	/** Advisor's mailing address. */
     @NotBlank
     @Column(name = "address", nullable = false)
     private String address;
-	
+
 	/** Advisor's contact number. */ 
     @NotBlank
     @Column(name = "phone", nullable = false)
